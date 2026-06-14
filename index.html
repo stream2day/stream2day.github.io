@@ -363,6 +363,335 @@ Login
   <div class="section-divider" style="margin-top:12px;"></div>
   </div>
   <!-- Latest News Section -->
+  <div id="exploreNewsSection" cla<script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.7/hls.min.js"></script>
+<link rel="stylesheet" href="style.css" />
+<style>
+    .pl-loader {
+      position: absolute;
+      bottom: 80px; left: 50%; transform: translateX(-50%);
+      z-index: 1;
+      margin-top: 0;
+      width: 120px;
+      height: 3px;
+      border-radius: 99px;
+      background: rgba(255,255,255,0.08);
+      overflow: hidden;
+    }
+    .pl-loader::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -45%;
+      width: 45%;
+      height: 100%;
+      border-radius: 99px;
+      background: var(--accent);
+      box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 60%, transparent);
+      animation: plScroll 1.2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+    }
+    @keyframes plScroll {
+      0%   { left: -45%; }
+      100% { left: 100%; }
+    }
+  </style>
+</head>
+<body>
+<div id="sidebarOverlay" onclick="closeSidebar()"></div>
+<div id="sidebar">
+<div class="sb-body">
+
+<!-- ── PROFILE ── -->
+<div class="sb-settings-profile-wrap">
+<div id="sbProfileLoggedOut" class="sb-settings-profile-out">
+<div class="profile-login-icon">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+</div>
+<div class="profile-login-info">
+<div class="profile-login-title">Login</div>
+<div class="profile-login-sub">to sync your data</div>
+</div>
+<button class="google-login-btn" onclick="firebaseLogin()">
+<svg viewBox="0 0 24 24" width="16" height="16"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+Login
+</button>
+</div>
+<div id="sbProfileLoggedIn" class="sb-settings-profile-in" style="display:none;">
+<img id="sbProfilePhoto" class="profile-photo" src="" alt=""/>
+<div class="profile-info">
+<div class="profile-name-row">
+<div id="sbProfileName" class="profile-name"></div>
+</div>
+<div id="sbProfileMemberSince" class="profile-email"></div>
+</div>
+<button class="profile-logout-btn" onclick="firebaseLogout()">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+</button>
+</div>
+</div>
+
+
+
+<div class="sb-settings-group">
+<div class="s-row can-hover" onclick="closeSidebar();setTimeout(openSavedVideosModal,200)">
+<span class="s-row-label">Saved Videos</span>
+<div class="s-row-right" style="gap:8px;">
+<span id="sbSavedVidCount" style="font-size:0.75rem;font-family:'Plus Jakarta Sans',sans-serif;color:var(--muted);background:var(--surface2);padding:2px 8px;border-radius:20px;"></span>
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+</div>
+</div>
+<div class="s-divider"></div>
+<div class="s-row can-hover" onclick="closeSidebar();setTimeout(openBookmarkedEpsModal,200)">
+<span class="s-row-label">Saved Audios</span>
+<div class="s-row-right" style="gap:8px;">
+<span id="sbSavedEpCount" style="font-size:0.75rem;font-family:'Plus Jakarta Sans',sans-serif;color:var(--muted);background:var(--surface2);padding:2px 8px;border-radius:20px;"></span>
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+</div>
+</div>
+</div>
+
+<div class="sb-quicklinks-group">
+<div class="sb-cat-item" onclick="closeSidebar();setTimeout(function(){openLiveTvModal();},200)" style="cursor:pointer;">
+<div class="sb-cat-thumb" style="display:flex;align-items:center;justify-content:center;">
+<svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8" width="20" height="20"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/></svg>
+</div>
+<div class="sb-cat-info">
+<div class="sb-cat-name">Live TV</div>
+<div class="sb-cat-sub" id="sbLiveTvCount">Channels</div>
+</div>
+<svg class="sb-cat-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="9 18 15 12 9 6"/></svg>
+</div>
+<div class="s-divider"></div>
+<div class="sb-cat-item" onclick="closeSidebar();setTimeout(function(){openAllStationsModal();},200)" style="cursor:pointer;">
+<div class="sb-cat-thumb" style="display:flex;align-items:center;justify-content:center;">
+<svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8" width="20" height="20"><rect x="2" y="8" width="20" height="13" rx="2"/><path d="M6 8l9-5"/><circle cx="8" cy="14" r="3"/><line x1="14" y1="11" x2="20" y2="11"/><line x1="14" y1="14" x2="20" y2="14"/><line x1="14" y1="17" x2="20" y2="17"/></svg>
+</div>
+<div class="sb-cat-info">
+<div class="sb-cat-name">Live Radio</div>
+<div class="sb-cat-sub" id="sbLiveRadioCount">Stations</div>
+</div>
+<svg class="sb-cat-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="9 18 15 12 9 6"/></svg>
+</div>
+<div class="s-divider"></div>
+<div class="sb-cat-item" onclick="closeSidebar();setTimeout(function(){openSportsModal();},200)" style="cursor:pointer;">
+<div class="sb-cat-thumb" style="display:flex;align-items:center;justify-content:center;">
+<i class="fa-solid fa-trophy" style="color:var(--accent);font-size:1.1rem;"></i>
+</div>
+<div class="sb-cat-info">
+<div class="sb-cat-name">Sports</div>
+<div class="sb-cat-sub" id="sbSportsCount">Matches</div>
+</div>
+<svg class="sb-cat-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="9 18 15 12 9 6"/></svg>
+</div>
+<div class="s-divider"></div>
+<div class="sb-cat-item" onclick="closeSidebar();setTimeout(function(){openReelsModal(Math.floor(Math.random()*(window._reelsData||[]).length)||0);},200)" style="cursor:pointer;">
+<div class="sb-cat-thumb" style="display:flex;align-items:center;justify-content:center;">
+<i class="fa-brands fa-rev" style="color:var(--accent);font-size:1.2rem;"></i>
+</div>
+<div class="sb-cat-info">
+<div class="sb-cat-name">Reels</div>
+<div class="sb-cat-sub">Scroll &amp; Chill</div>
+</div>
+<svg class="sb-cat-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="9 18 15 12 9 6"/></svg>
+</div>
+</div>
+
+<!-- ── STORAGE ── -->
+<div class="sb-settings-group">
+<div class="s-row">
+<span class="s-row-label">Storage Usage</span>
+<div class="s-row-right">
+<span id="sbStorageUsageLabel" style="font-size:0.82rem;color:var(--text-muted);font-family:'Plus Jakarta Sans',sans-serif;">Calculating...</span>
+</div>
+</div>
+<div class="s-divider"></div>
+<div class="s-row can-hover" onclick="clearAppCache()">
+<span class="s-row-label" style="color:#e05c5c;">Clear Cache</span>
+<div class="s-row-right">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e05c5c" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+</div>
+</div>
+</div>
+
+<div id="sbGetApp" class="sb-settings-group" style="display:none;">
+<div class="s-row can-hover" onclick="window.open('https://stream2day.pages.dev/app','_blank')">
+<span class="s-row-label">Get App</span>
+<div class="s-row-right">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 9h-4V3H9v6H5l7 7 7-7zm-8 2V5h2v6h1.17L12 13.17 9.83 11H11zm-6 7h14v2H5z"/></svg>
+</div>
+</div>
+</div>
+<div class="sb-settings-group">
+<div class="s-row can-hover" onclick="shareApp()">
+<span class="s-row-label">Share App</span>
+<div class="s-row-right">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+</div>
+</div>
+</div>
+<div class="sb-settings-group">
+<div class="s-row can-hover" onclick="window.open('#','_self')">
+<span class="s-row-label">About</span>
+<div class="s-row-right"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></div>
+</div>
+<div class="s-divider"></div>
+<div class="s-row can-hover" onclick="window.open('#','_self')">
+<span class="s-row-label">Privacy Policy</span>
+<div class="s-row-right"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></div>
+</div>
+<div class="s-divider"></div>
+<div class="s-row can-hover" onclick="window.open('#','_self')">
+<span class="s-row-label">Terms</span>
+<div class="s-row-right"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></div>
+</div>
+</div>
+
+<!-- ── FOOTER ── -->
+<div class="sb-settings-footer">
+<div class="settings-footer-copy">© <span id="sbFooterYear"></span> Stream2Day<br>All Rights Reserved</div>
+<div class="settings-footer-icons">
+<a href="https://facebook.com/Stream2Day" target="_blank" class="follow-icon-btn fb"><i class="fa-brands fa-facebook"></i></a>
+<a href="https://t.me/Stream2Day_app" target="_blank" class="follow-icon-btn tg"><i class="fa-brands fa-telegram"></i></a>
+<a href="mailto:stream2day.devs@gmail.com" class="follow-icon-btn em"><i class="fa-solid fa-envelope"></i></a>
+</div>
+</div>
+
+</div>
+</div>
+<header>
+<div class="header-inner" id="headerInner">
+<!-- Hamburger -->
+<button id="hamburgerBtn" onclick="toggleSidebar()" class="header-icon-btn">
+<svg id="hamburgerIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" width="20" height="20" style="transition:opacity 0.2s,transform 0.2s;position:absolute;">
+<line x1="3" y1="6" x2="21" y2="6"/>
+<line x1="3" y1="12" x2="21" y2="12"/>
+<line x1="3" y1="18" x2="21" y2="18"/>
+</svg>
+<svg id="closeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" width="20" height="20" style="opacity:0;transform:rotate(-90deg);transition:opacity 0.2s,transform 0.2s;position:absolute;">
+<line x1="18" y1="6" x2="6" y2="18"/>
+<line x1="6" y1="6" x2="18" y2="18"/>
+</svg>
+</button>
+<!-- Title -->
+<div style="position:absolute;left:50%;transform:translateX(-50%);pointer-events:none;">
+<span class="logo-title">Stream<span class="fm">2Day</span></span>
+</div>
+<!-- Search Icon -->
+<button id="headerSearchBtn" onclick="openHeaderSearch()" class="header-icon-btn" style="margin-left:auto;">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+</svg>
+</button>
+<!-- Inline Search Expand -->
+<div id="headerSearchExpand">
+<button id="headerSearchClose" onclick="closeHeaderSearch()">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="18" height="18"><polyline points="15 18 9 12 15 6"/></svg>
+</button>
+<input id="headerInlineInput" type="text" placeholder="Search..." autocomplete="off"
+        oninput="_headerSuggest(this.value)"
+        onkeydown="if(event.key==='Enter')_headerSearchSubmit()">
+<button id="headerSearchGo" onclick="_headerSearchSubmit()">
+<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.8" stroke-linecap="round" width="14" height="14">
+<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+</svg>
+</button>
+</div>
+</div>
+<!-- searchInput/searchClear hidden refs for legacy JS compatibility -->
+<input type="text" id="searchInput" style="display:none;" autocomplete="off" />
+<button class="search-clear" id="searchClear" style="display:none;" onclick="clearSearch()"></button>
+</header>
+<div id="headerSearchOverlay" onclick="closeHeaderSearch()"></div>
+<div id="searchSuggestions" style="position:fixed;left:12px;right:12px;"></div>
+<!-- ══ DESKTOP LEFT SIDEBAR ══ -->
+<nav id="desktopSidebar">
+  <div class="dsb-logo">
+    <span id="dsbLogoText">Stream<span class="fm">2Day</span></span>
+    <input type="text" id="dsbSearchInput" class="dsb-search-input" placeholder="Search..." autocomplete="off"
+      onkeydown="if(event.key==='Enter')dsbSubmit();if(event.key==='Escape')dsbCloseSearch()">
+    <button class="dsb-search-btn" id="dsbSearchBtn" onclick="document.querySelector('.dsb-logo').classList.contains('search-open')?dsbCloseSearch():dsbOpenSearch()" aria-label="Search">
+      <svg id="dsbSearchIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="17" height="17"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <svg id="dsbCloseIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="17" height="17" style="display:none"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+
+  <div class="dsb-divider"></div>
+
+  <!-- ══ SIDEBAR CONTENT EMBEDDED IN DESKTOP LEFT SIDEBAR ══ -->
+  <div id="dsbSidebarEmbed" class="dsb-sidebar-embed"></div>
+
+</nav>
+<!-- ══ END DESKTOP SIDEBAR ══ -->
+
+<div class="wrap">
+<!-- MUSIC PAGE -->
+<div class="page" id="pagePodcast">
+<!-- Offline / loading placeholder -->
+<div id="listenPlaceholder" class="tab-placeholder">
+<div class="pl-bars">
+<div class="pl-bar"></div>
+<div class="pl-bar"></div>
+<div class="pl-bar"></div>
+<div class="pl-bar"></div>
+<div class="pl-bar"></div>
+</div>
+</div>
+
+<!-- Live Radio — horizontal scroll -->
+<div id="stationsInlineSection" class="cat-tint-0" style="margin-top:16px;padding:0 0 4px;display:none;">
+<div class="live-tv-scroll" id="stationsHorizScroll"></div>
+</div>
+<!-- Latest Episodes — rankings style -->
+<div id="latestEpSection" style="margin-top:2px;display:none;">
+<div id="latestEpPillBar" class="rankings-pill-bar"></div>
+<div id="latestEpList" class="latest-ep-grid-scroll"></div>
+</div>
+<!-- Listen Browse Categories Section -->
+<div id="listenBrowseCatsSection" style="display:none;">
+<div class="section-divider"></div>
+<div class="browse-cats-header" onclick="openListenBrowseAllModal()">
+<span class="browse-cats-title">Browse Categories</span>
+<a class="section-see-all" onclick="event.stopPropagation();openListenBrowseAllModal()" style="margin-left:auto;">See All ›</a>
+</div>
+<div id="listenBrowseCatsList" class="browse-cats-scroll"></div>
+</div>
+<!-- Podcast Category Episode Sections -->
+<div id="podcastCatEpSections"></div>
+<!-- Browse Artists Section -->
+<div id="listenBrowseArtistsSection" style="display:none;margin-top:2px;">
+<div class="section-divider"></div>
+<div class="browse-cats-header" onclick="openAllArtistsModal()" style="cursor:pointer;">
+<span class="browse-cats-title">Browse Artists</span>
+<a class="section-see-all" onclick="event.stopPropagation();openAllArtistsModal()" style="margin-left:auto;">See All ›</a>
+</div>
+<div id="listenBrowseArtistsList" class="browse-artists-scroll"></div>
+</div>
+<!-- Listen For You Section -->
+<div id="listenForYouSection" style="display:none;margin-top:12px;border-radius:16px 16px 0 0;">
+<div class="for-you-header">
+<div class="for-you-title">
+          For You
+          <span class="fy-sparkle" aria-hidden="true">✦</span>
+</div>
+</div>
+<div id="listenForYouGrid" class="for-you-grid"></div>
+<div id="listenForYouSentinel" style="height:1px;width:100%;"></div>
+<div id="listenForYouLoader" class="for-you-loader" style="display:none;">
+<div class="fy-dot"></div><div class="fy-dot"></div><div class="fy-dot"></div>
+</div>
+</div>
+<div style="height:120px;"></div>
+</div>
+<!-- EXPLORE PAGE -->
+<div class="page" id="pageExplore">
+  <!-- Explore Sports Section -->
+  <div id="exploreSportsSection" style="display:none;margin-top:0;">
+  <div class="browse-cats-header" onclick="openSportsModal()" style="cursor:pointer;">
+  <span class="browse-cats-title">Sports</span>
+  <a class="section-see-all" onclick="event.stopPropagation();openSportsModal()" style="margin-left:auto;">See All ›</a>
+  </div>
+  <div id="exploreSportsList" class="watch-sports-scroll"></div>
+  <div class="section-divider" style="margin-top:12px;"></div>
+  </div>
+  <!-- Latest News Section -->
   <div id="exploreNewsSection" class="explore-news-section-wrap">
     <div class="explore-news-header-row">
       <span class="news-modal-section-title">Latest News</span>
