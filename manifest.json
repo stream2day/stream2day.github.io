@@ -1,7 +1,7 @@
 {
   "id": "com.streamtoday.app",
-  "name": "Stream Today",
-  "short_name": "Stream Today",
+  "name": "Stream2Day",
+  "short_name": "Stream2Day",
   "version": "4.0.2",
   "description": "Stream Today - Live TV, FM, Movie & Podcast",
   "start_url": "https://streamtoday.pages.dev/index.html",
