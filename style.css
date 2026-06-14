@@ -3,14 +3,14 @@
     img { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; pointer-events: none; }
     html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
     :root {
-      --bg: #f3eefe;
-      --surface: #ffffff;
-      --surface2: #fafaf9;
-      --border: #e8e8e5;
-      --border2: #d8d8d4;
-      --text: #111110;
-      --muted: #a0a09a;
-      --muted2: #70706a;
+      --bg: #141414;
+      --surface: #1f1f1f;
+      --surface2: #2a2a2a;
+      --border: #333333;
+      --border2: #404040;
+      --text: #e8e8f0;
+      --muted: #6a6a7a;
+      --muted2: #8a8a9a;
       --accent: #EF4444;
       --accent2: #dc2626;
       --accent-light: rgba(239,68,68,0.10);
