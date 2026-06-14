@@ -1,4 +1,4 @@
-const CACHE = 'streamtoday-v6.9.8';
+const CACHE = 'streamtoday-v6.9.9';
 const ASSETS = [
   '/',
   './style.css',
