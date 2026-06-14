@@ -384,7 +384,7 @@ window.dataLayer = window.dataLayer || [];
     var id = CT.track.id;
     var hashId = (CT.track.type === 'radio') ? (CT.track._key || id) : id;
     var url = location.origin + '/share/' + hashId;
-    var title = CT.track.name || 'Stream Today';
+    var title = CT.track.name || 'CastFM';
     if (navigator.share) {
       var fp = document.getElementById('miniPlayer');
       if (fp) fp.style.transform = 'translateY(0)';
@@ -779,6 +779,7 @@ window.dataLayer = window.dataLayer || [];
     if (de) de.classList.toggle('active', tab === 'explore');
     if (tab === 'watch') loadWatchVideos();
     if (tab === 'explore' && window.loadExploreNews) window.loadExploreNews();
+    if (tab === 'explore' && typeof renderWatchSportsSection === 'function') renderWatchSportsSection();
   }
   /* ── THEME ── */
   function setTheme(mode) {
@@ -787,22 +788,22 @@ window.dataLayer = window.dataLayer || [];
     applyTheme(mode);
     updateSettingsUI();
   }
-  window.setTheme = setTheme;
   function applyTheme(mode) {
-    const useDark = true; // night mode only
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const useDark = mode === 'dark' || (mode === 'system' && prefersDark);
     if (useDark) {
       document.documentElement.setAttribute('data-theme', 'dark');
-      document.documentElement.style.background = '#141414';
+      document.documentElement.style.background = '#000000';
     } else {
       document.documentElement.removeAttribute('data-theme');
-      document.documentElement.style.background = '#edf3fc';
+      document.documentElement.style.background = '#000000';
     }
     // theme-color meta update (PWA / browser) — accent আপডেটে আবার set হবে
     const metaTheme = document.querySelector('meta[name="theme-color"]');
-    if (metaTheme) metaTheme.setAttribute('content', useDark ? '#141414' : '#edf3fc');
+    if (metaTheme) metaTheme.setAttribute('content', '#000000');
     // Android native status bar update
     if (window.AndroidBridge && window.AndroidBridge.setStatusBarColor) {
-      window.AndroidBridge.setStatusBarColor(useDark ? '#141414' : '#edf3fc');
+      window.AndroidBridge.setStatusBarColor('#000000');
     }
     // theme পরিবর্তনে full player gradient আপডেট করো
     const currentAccent = localStorage.getItem('accent') || 'blue';
@@ -850,8 +851,8 @@ window.dataLayer = window.dataLayer || [];
       _setStorageText((lsTotal / 1024).toFixed(1) + ' KB');
       return;
     }
-    var epName    = (typeof EP_CACHE_NAME    !== 'undefined') ? EP_CACHE_NAME    : 'streamtoday-ep-audio-v1';
-    var thumbName = (typeof THUMB_CACHE_NAME !== 'undefined') ? THUMB_CACHE_NAME : 'streamtoday-thumb-v1';
+    var epName    = (typeof EP_CACHE_NAME    !== 'undefined') ? EP_CACHE_NAME    : 'castfm-ep-audio-v1';
+    var thumbName = (typeof THUMB_CACHE_NAME !== 'undefined') ? THUMB_CACHE_NAME : 'castfm-thumb-v1';
     function getCacheSize(name) {
       return caches.open(name).then(function(cache) {
         return cache.keys().then(function(keys) {
@@ -890,8 +891,8 @@ window.dataLayer = window.dataLayer || [];
     toDelete.forEach(function(k) { localStorage.removeItem(k); });
     // Cache API (thumbnail + audio) — confirm হলেই clear হবে
     if ('caches' in window) {
-      var _epN = (typeof EP_CACHE_NAME !== 'undefined') ? EP_CACHE_NAME : 'streamtoday-ep-audio-v1';
-      var _thN = (typeof THUMB_CACHE_NAME !== 'undefined') ? THUMB_CACHE_NAME : 'streamtoday-thumb-v1';
+      var _epN = (typeof EP_CACHE_NAME !== 'undefined') ? EP_CACHE_NAME : 'castfm-ep-audio-v1';
+      var _thN = (typeof THUMB_CACHE_NAME !== 'undefined') ? THUMB_CACHE_NAME : 'castfm-thumb-v1';
       caches.delete(_epN).catch(function() {});
       caches.delete(_thN).catch(function() {});
     }
@@ -907,10 +908,10 @@ window.dataLayer = window.dataLayer || [];
   function applyAccent() {
     document.documentElement.removeAttribute('data-accent');
     const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    document.documentElement.style.setProperty('--fp-grad1', isDark ? '#0d1020' : 'var(--accent)');
-    document.documentElement.style.setProperty('--fp-grad2', isDark ? '#111830' : 'var(--accent)');
-    document.documentElement.style.setProperty('--fp-grad3', isDark ? '#080d18' : 'var(--accent2)');
-    const themeColor = isDark ? '#0a0e1c' : '#edf3fc';
+    document.documentElement.style.setProperty('--fp-grad1', isDark ? '#0a0a0a' : 'var(--accent)');
+    document.documentElement.style.setProperty('--fp-grad2', isDark ? '#111111' : 'var(--accent)');
+    document.documentElement.style.setProperty('--fp-grad3', isDark ? '#050505' : 'var(--accent2)');
+    const themeColor = isDark ? '#000000' : '#000000';
     const metaThemeAccent = document.querySelector('meta[name="theme-color"]');
     if (metaThemeAccent) metaThemeAccent.setAttribute('content', themeColor);
     if (window.AndroidBridge && window.AndroidBridge.setStatusBarColor) {
@@ -920,7 +921,7 @@ window.dataLayer = window.dataLayer || [];
   /* init accent */
   applyAccent();
   /* init theme */
-  applyTheme('dark');
+  applyTheme(localStorage.getItem('theme') || 'system');
   /* init settings UI — DOM ready হলে pill active state set করো */
   document.addEventListener('DOMContentLoaded', function() { updateSettingsUI(); });
   if (document.readyState !== 'loading') updateSettingsUI();
@@ -930,7 +931,7 @@ window.dataLayer = window.dataLayer || [];
   /* auto switch on system theme change */
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
     if ((localStorage.getItem('theme') || 'system') === 'system') {
-      applyTheme('dark');
+      applyTheme('system');
     }
   });
   function buildCard(s, container, index = 0) {
@@ -1128,7 +1129,7 @@ window.dataLayer = window.dataLayer || [];
       { src: imgSrc, sizes: '512x512', type: 'image/jpeg' }
     ] : [];
     navigator.mediaSession.metadata = new MediaMetadata({
-      title: s.name || '—', artist: 'Stream Today',
+      title: s.name || '—', artist: 'Cast FM',
       album: s.genre || '',
       artwork: artworkArr
     });
@@ -1293,7 +1294,7 @@ window.dataLayer = window.dataLayer || [];
   window.closeHeaderSearch  = closeHeaderSearch;
   window._headerSearchSubmit = _headerSearchSubmit;
   // ── SEARCH HISTORY ──
-  var _SG_HISTORY_KEY = 'streamtoday_search_history';
+  var _SG_HISTORY_KEY = 'castfm_search_history';
   var _SG_HISTORY_MAX = 8;
   function _sgGetHistory() {
     try { return JSON.parse(localStorage.getItem(_SG_HISTORY_KEY) || '[]'); } catch(e) { return []; }
@@ -1602,6 +1603,18 @@ if ('serviceWorker' in navigator) {
         if (wsnap.exists() && Array.isArray(wsnap.val())) {
           watchFavs = wsnap.val();
           localStorage.setItem('watch_favs', JSON.stringify(watchFavs));
+          // fav button UI update
+          watchFavs.forEach(function(key) {
+            var btn = document.getElementById('wfav-' + key);
+            if (btn) {
+              btn.className = 'fav-btn faved';
+              var svg = btn.querySelector('svg');
+              if (svg) svg.setAttribute('fill', 'currentColor');
+            }
+          });
+          // sidebar saved count update
+          var sbCount = document.getElementById('sbSavedVidCount');
+          if (sbCount) sbCount.textContent = watchFavs.length || '';
         }
       } catch(e) { console.error('Watch fav load error:', e); }
       // Load tv favs from Firebase
@@ -1892,7 +1905,7 @@ if ('serviceWorker' in navigator) {
   }
   function batchCacheThumbs(urls) {
     if (!('caches' in window) || !urls || !urls.length) return;
-    var cacheName = (typeof THUMB_CACHE_NAME !== 'undefined') ? THUMB_CACHE_NAME : 'streamtoday-thumb-v1';
+    var cacheName = (typeof THUMB_CACHE_NAME !== 'undefined') ? THUMB_CACHE_NAME : 'castfm-thumb-v1';
     var maxCount  = (typeof THUMB_CACHE_MAX  !== 'undefined') ? THUMB_CACHE_MAX  : 100;
     caches.open(cacheName).then(function(cache) {
       cache.keys().then(function(existing) {
@@ -1931,7 +1944,7 @@ if ('serviceWorker' in navigator) {
   // ── AUTO-CACHE: যেকোনো <img> load হলেই cache হবে ──
   (function _initAutoCacheImages() {
     if (!('caches' in window)) return;
-    var cacheName = (typeof THUMB_CACHE_NAME !== 'undefined') ? THUMB_CACHE_NAME : 'streamtoday-thumb-v1';
+    var cacheName = (typeof THUMB_CACHE_NAME !== 'undefined') ? THUMB_CACHE_NAME : 'castfm-thumb-v1';
     var maxCount  = (typeof THUMB_CACHE_MAX  !== 'undefined') ? THUMB_CACHE_MAX  : 100;
     var _queued   = new Set(); // duplicate prevent
 
@@ -2378,6 +2391,9 @@ if ('serviceWorker' in navigator) {
         el.classList.toggle('active', el.textContent.trim() === (tag === 'all' ? 'All' : tag));
       });
     }
+    /* scroll to top */
+    var scrollEl = document.querySelector('#browseCatsAllModal .pep-scroll-body');
+    if (scrollEl) scrollEl.scrollTop = 0;
     /* filter categories */
     if (tag === 'all') {
       _renderBrowseCatsAllList(_browseCatsAllItems);
@@ -2467,11 +2483,17 @@ if ('serviceWorker' in navigator) {
   function _renderBrowseCatsAllList(cats) {
     var listEl = document.getElementById('browseCatsAllList');
     if (!listEl) return;
+    // clean up old sentinel
+    var oldSentinel = document.getElementById('browseCatsAllLoadMore');
+    if (oldSentinel) oldSentinel.remove();
     if (!cats.length) {
       listEl.innerHTML = '<div style="text-align:center;padding:48px 16px;color:var(--muted);font-family:DM Sans,sans-serif;font-size:0.9rem;">No categories found</div>';
       return;
     }
-    listEl.innerHTML = cats.map(function(cat) {
+    var limit = 12;
+    var shown = 0;
+    listEl.innerHTML = '';
+    function _makeCatCardHTML(cat) {
       var thumbInner = _buildBrowseCatThumb(cat);
       var _bvcCount = (_watchCatVideoCount[cat._key] || 0);
       var _bvcBadge = _bvcCount > 0 ? '<div class="browse-cat-vidcount">' + _bvcCount + ' <i class="fa-solid fa-video"></i></div>' : '';
@@ -2479,7 +2501,28 @@ if ('serviceWorker' in navigator) {
         + '<div class="browse-cat-card-thumb">' + thumbInner + _bvcBadge + '</div>'
         + '<div class="browse-cat-card-label">' + (cat.title || cat._key) + '</div>'
         + '</div>';
-    }).join('');
+    }
+    function loadNextBatch() {
+      var batch = cats.slice(shown, shown + limit);
+      if (!batch.length) return false;
+      var frag = document.createDocumentFragment();
+      batch.forEach(function(cat) {
+        var tmp = document.createElement('div');
+        tmp.innerHTML = _makeCatCardHTML(cat);
+        while (tmp.firstChild) frag.appendChild(tmp.firstChild);
+      });
+      listEl.appendChild(frag);
+      shown += batch.length;
+      return shown < cats.length;
+    }
+    loadNextBatch();
+    if (shown < cats.length) {
+      var sentinel = makeSentinel();
+      sentinel.id = 'browseCatsAllLoadMore';
+      listEl.parentElement.appendChild(sentinel);
+      var scrollEl = listEl.closest('.pep-scroll-body');
+      attachAutoLoad(scrollEl, sentinel, loadNextBatch);
+    }
   }
   function _browseCatsAllFilter(q) {
     var base = _browseCatsAllActiveTag === 'all'
@@ -2588,6 +2631,8 @@ if ('serviceWorker' in navigator) {
     // Rankings Section
     renderRankingsSection();
     batchCacheThumbs(_watchVideos.map(function(v){ var ytId = getYouTubeId(v.url||''); return v.img || (ytId ? getYouTubeThumb(ytId) : null); }).filter(Boolean));
+    // Top Picks
+    renderEditorChoiceSection();
     // Category rows
     renderWatchCatRows();
     renderBrowseCats();
@@ -2804,6 +2849,52 @@ if ('serviceWorker' in navigator) {
       else imgEl.addEventListener('load', applyColor, { once: true });
     });
   }
+  /* ══════════════════════════════════════
+     EDITORS CHOICE SECTION
+  ══════════════════════════════════════ */
+  function renderEditorChoiceSection() {
+    var section = document.getElementById('editorsChoiceSection');
+    var row     = document.getElementById('editorsChoiceRow');
+    if (!section || !row) return;
+    var featured = _watchVideos.filter(function(v){ return v.featured === true && v.url; })
+      .sort(function(a,b){ return (parseInt(b.id)||0)-(parseInt(a.id)||0); })
+      .slice(0, 9);
+    if (!featured.length) { section.style.display = 'none'; return; }
+    section.style.display = '';
+    row.innerHTML = featured.map(function(v, i){ return makeWatchVideoCard(v, i); }).join('');
+    _attachVideoCardClicks(row);
+  }
+  function openEditorChoiceModal() {
+    var featured = _watchVideos.filter(function(v){ return v.featured === true && v.url; })
+      .sort(function(a,b){ return (parseInt(b.id)||0)-(parseInt(a.id)||0); });
+    if (!featured.length) return;
+    window._watchCatCurrentCatId = '__editors_choice__';
+    _watchCatCurrentVideos = featured;
+    _watchCatActiveTag  = 'all';
+    _watchCatActiveSort = 'latest';
+    var titleEl = document.getElementById('watchCatTitle');
+    if (titleEl) titleEl.textContent = 'Top Picks';
+    var coverEl      = document.getElementById('watchCatCover');
+    var coverVideoEl = document.getElementById('watchCatCoverVideo');
+    if (coverEl) {
+      coverEl.style.backgroundImage = '';
+      coverEl.classList.remove('wcat-cover-has-video');
+      coverEl.style.display = '';
+      if (coverVideoEl) { coverVideoEl.pause(); coverVideoEl.src = ''; coverVideoEl.style.display = 'none'; }
+    }
+    var si = document.getElementById('watchCatSearchInput');
+    if (si) si.value = '';
+    window._safeModalSearchClose('watchCat');
+    watchCatRenderTagBar(featured);
+    watchCatRenderList(_watchCatSortVideos(featured));
+    document.getElementById('watchCatModal').classList.add('open');
+    document.body.classList.add('watch-open');
+    lockBodyScroll();
+    safeHistoryPush({ type: 'modal', modal: 'watchcat', catId: '__editors_choice__' }, '', '#editors-choice');
+  }
+  window.renderEditorChoiceSection = renderEditorChoiceSection;
+  window.openEditorChoiceModal     = openEditorChoiceModal;
+
   function renderWatchCatRows() {
     var container = document.getElementById('watchCatRows');
     if (!container || !_watchCats.length) return;
@@ -2915,8 +3006,8 @@ if ('serviceWorker' in navigator) {
      WATCH SPORTS SECTION
   ══════════════════════════════════════ */
   function renderWatchSportsSection() {
-    var section = document.getElementById('watchSportsSection');
-    var list    = document.getElementById('watchSportsList');
+    var section = document.getElementById('exploreSportsSection');
+    var list    = document.getElementById('exploreSportsList');
     if (!section || !list) return;
     var matches = (_sportsMatches || []).filter(function(m) {
       var state = _sportsMatchState(m);
@@ -2949,32 +3040,27 @@ if ('serviceWorker' in navigator) {
       var title      = match.title || '';
       var isLive     = state === 'live';
       var isHighlights = state === 'highlights';
-      var clickable  = isLive || isHighlights || !!(match.intro) || !!(match.direct);
+      var clickable  = isLive || isHighlights || !!(match.stream_url) || !!(match.intro) || !!(match.direct);
       var badgeHtml;
       if (isLive) {
         badgeHtml = '<div class="sports-live-badge"><span class="tv-live-pulse"></span>LIVE</div>';
       } else if (isHighlights) {
-        badgeHtml = '<div class="sports-highlights-badge"><span class="sports-highlights-icon">&#9654;</span>HIGHLIGHTS</div>';
+        badgeHtml = '<div class="sports-highlights-badge">HIGHLIGHTS</div>';
       } else {
         badgeHtml = '<div class="sports-countdown" id="wss-scd-' + key + '" data-matchtime="' + (match.match_time || 0) + '">--:--</div>';
       }
-      var bottomHtml = '<div class="sports-card-bottom">'
-        + (stage ? '<span class="sports-card-stage">' + stage + '</span>' : '')
-        + badgeHtml
-        + (match.match_time ? '<span class="sports-card-time">' + _formatMatchTime(match.match_time) + '</span>' : '')
-        + (title ? '<span class="sports-card-title">' + title + '</span>' : '')
-        + '</div>';
       var onclickAttr = clickable ? 'onclick="openSportsStream(\'' + key + '\')"' : '';
       var disabledClass = clickable ? '' : ' sports-card-disabled';
       return '<div class="sports-modal-card watch-sports-inline-card' + disabledClass + '" id="wss-mc-' + key + '" style="animation-delay:' + (idx * 0.07) + 's" ' + onclickAttr + '>'
         + '<span class="sports-card-trophy">&#127942;</span>'
         + '<div class="sports-card-inner">'
+        + (title ? '<div class="sports-card-title">' + title + '</div>' : '')
         + '<div class="sports-teams-row">'
         + '<div class="sports-team">' + flagHtml(flagA, teamA) + '<span class="sports-team-name">' + teamA + '</span></div>'
         + '<div class="sports-vs">VS</div>'
         + '<div class="sports-team">' + flagHtml(flagB, teamB) + '<span class="sports-team-name">' + teamB + '</span></div>'
         + '</div>'
-        + bottomHtml
+        + '<div class="sports-card-bottom">' + badgeHtml + '</div>'
         + '</div>'
         + '</div>';
     }).join('');
@@ -4635,8 +4721,8 @@ if ('serviceWorker' in navigator) {
         { src: thumb, sizes: '512x512', type: 'image/jpeg' }
       ] : [];
       navigator.mediaSession.metadata = new MediaMetadata({
-        title:  r.title   || 'Stream Today Reels',
-        artist: 'Stream Today',
+        title:  r.title   || 'CastFM Reels',
+        artist: 'CastFM',
         album:  'Reels',
         artwork: artworkArr
       });
@@ -4970,7 +5056,22 @@ if ('serviceWorker' in navigator) {
       } else {
         // HLS.js দিয়ে play করো
         if (window.Hls && Hls.isSupported()) {
-          var hls = new Hls({ enableWorker: false });
+          var hls = new Hls({
+            enableWorker: true,
+            lowLatencyMode: true,
+            backBufferLength: 90,
+            maxBufferLength: 30,
+            maxMaxBufferLength: 60,
+            maxBufferSize: 60 * 1000 * 1000,
+            maxBufferHole: 0.5,
+            highBufferWatchdogPeriod: 2,
+            nudgeMaxRetry: 5,
+            startLevel: -1,
+            abrEwmaFastLive: 3.0,
+            abrEwmaSlowLive: 9.0,
+            liveSyncDurationCount: 2,
+            liveMaxLatencyDurationCount: 4
+          });
           hls.loadSource(v.url);
           hls.attachMedia(vid);
           hls.on(Hls.Events.MANIFEST_PARSED, function() { vid.play().catch(function(){}); });
@@ -5384,8 +5485,8 @@ if ('serviceWorker' in navigator) {
       { src: thumb, sizes: '512x512', type: 'image/jpeg' }
     ] : [];
     navigator.mediaSession.metadata = new MediaMetadata({
-      title:  v.title   || 'Stream Today Video',
-      artist: v.channel || 'Stream Today',
+      title:  v.title   || 'CastFM Video',
+      artist: v.channel || 'Cast FM',
       album:  v.category || '',
       artwork: artworkArr
     });
@@ -5594,8 +5695,8 @@ if ('serviceWorker' in navigator) {
   var _relSeeAllInit = document.getElementById('wvmRelatedSeeAll');
   if (_relSeeAllInit) _relSeeAllInit.onclick = wvmOpenRelatedCat;
   function shareApp() {
-    var url = 'https://streamtoday.pages.dev/app';
-    var title = 'Stream Today';
+    var url = 'https://castfm.pages.dev/app';
+    var title = 'CastFM';
     if (window.AndroidBridge && window.AndroidBridge.share) {
       window.AndroidBridge.share(title, url);
     } else if (navigator.share) {
@@ -5615,12 +5716,12 @@ if ('serviceWorker' in navigator) {
     if (window._wvmCurrentSportsKey) {
       var sm = window._wvmCurrentSportsMatch;
       var smTitle = sm ? (sm.title || ((sm.team_a||'Team A') + ' vs ' + (sm.team_b||'Team B'))) : 'Sports';
-      text = smTitle + ' — Sports on Stream Today';
+      text = smTitle + ' — Sports on CastFM';
       url  = location.origin + '/share/' + window._wvmCurrentSportsKey;
     // Live TV channel
     } else if (window._activeTvKey) {
       var ch = _liveChannels.find(function(c) { return c._key === window._activeTvKey; });
-      text = (ch && ch.name) ? ch.name + ' — Live TV on Stream Today' : 'Live TV on Stream Today';
+      text = (ch && ch.name) ? ch.name + ' — Live TV on CastFM' : 'Live TV on CastFM';
       url  = location.origin + '/share/' + window._activeTvKey;
     } else {
       var v = window._wvmCurrentVideo;
@@ -5656,6 +5757,18 @@ if ('serviceWorker' in navigator) {
       window._wvmCurrentSportsKey   = null;
       window._wvmCurrentSportsMatch = null;
       document.querySelectorAll('.sports-match-card,.sports-modal-card').forEach(function(el) { el.classList.remove('sports-card-playing'); });
+      // sports mode UI remove করো
+      modal.classList.remove('sports-mode');
+      document.body.classList.remove('sports-player-open');
+      // sports topbar reset
+      var _spTitle = document.getElementById('sportsPlayerTitle');
+      var _spLive  = document.getElementById('sportsPlayerLiveBadge');
+      var _spBar   = document.getElementById('sportsServerBar');
+      if (_spTitle) _spTitle.textContent = '';
+      if (_spLive)  _spLive.classList.remove('visible');
+      if (_spBar)   { _spBar.innerHTML = ''; _spBar.style.display = 'none'; }
+      var _spDescBox = document.getElementById('spDescBox');
+      if (_spDescBox) { _spDescBox.textContent = ''; _spDescBox.style.display = 'none'; }
     }
     var wvmBody = document.getElementById('wvmBody');
     if (wvmBody) {
@@ -5921,7 +6034,7 @@ if ('serviceWorker' in navigator) {
     var title = match.title || '';
     var isLive = state === 'live';
     var isHighlights = state === 'highlights';
-    var clickable = isLive || isHighlights || !!(match.intro) || !!(match.direct);
+    var clickable = isLive || isHighlights || !!(match.stream_url) || !!(match.intro) || !!(match.direct);
     var flagHtml = function(src, name) {
       return src
         ? '<img src="' + src + '" alt="' + name + '" class="sports-flag-img" onerror="this.style.display=\'none\'">'
@@ -5931,27 +6044,22 @@ if ('serviceWorker' in navigator) {
     if (isLive) {
       badgeHtml = '<div class="sports-live-badge"><span class="tv-live-pulse"></span>LIVE</div>';
     } else if (isHighlights) {
-      badgeHtml = '<div class="sports-highlights-badge"><span class="sports-highlights-icon">&#9654;</span>HIGHLIGHTS</div>';
+      badgeHtml = '<div class="sports-highlights-badge">HIGHLIGHTS</div>';
     } else {
       badgeHtml = '<div class="sports-countdown" id="smmc-scd-' + key + '" data-matchtime="' + (match.match_time || 0) + '">--:--</div>';
     }
-    var bottomHtml = '<div class="sports-card-bottom">'
-      + (stage ? '<span class="sports-card-stage">' + stage + '</span>' : '')
-      + badgeHtml
-      + (match.match_time ? '<span class="sports-card-time">' + _formatMatchTime(match.match_time) + '</span>' : '')
-      + (title ? '<span class="sports-card-title">' + title + '</span>' : '')
-      + '</div>';
     var onclickAttr = clickable ? 'onclick="closeSportsModal();setTimeout(function(){openSportsStream(\'' + key + '\');},200)"' : '';
     var disabledClass = clickable ? '' : ' sports-card-disabled';
     return '<div class="sports-modal-card' + disabledClass + '" id="smmc-' + key + '" style="animation-delay:' + (idx * 0.07) + 's" ' + onclickAttr + '>'
       + '<span class="sports-card-trophy">&#127942;</span>'
       + '<div class="sports-card-inner">'
+      + (title ? '<div class="sports-card-title">' + title + '</div>' : '')
       + '<div class="sports-teams-row">'
       + '<div class="sports-team">' + flagHtml(flagA, teamA) + '<span class="sports-team-name">' + teamA + '</span></div>'
       + '<div class="sports-vs">VS</div>'
       + '<div class="sports-team">' + flagHtml(flagB, teamB) + '<span class="sports-team-name">' + teamB + '</span></div>'
       + '</div>'
-      + bottomHtml
+      + '<div class="sports-card-bottom">' + badgeHtml + '</div>'
       + '</div>'
       + '</div>';
   }
@@ -5991,13 +6099,21 @@ if ('serviceWorker' in navigator) {
   function _sportsMatchState(match) {
     var now = Date.now();
     var matchMs = (match.match_time || 0) * 1000;
-    var graceMs = 30 * 60 * 1000; // 30 minutes
-    // stream_url বা direct যেকোনো একটা থাকলেই LIVE
-    if (match.stream_url || match.direct) return 'live';
-    // দুটোই নেই, কিন্তু highlights আছে
+    var graceMs = 30 * 60 * 1000; // 30 minutes grace after match_time
+
+    // match_time পার হয়েছে কিনা চেক করো আগে
+    var matchStarted = matchMs > 0 ? now >= matchMs : true;
+
+    // stream_url বা direct আছে AND match_time পার হয়েছে — তাহলেই LIVE
+    if ((match.stream_url || match.direct) && matchStarted) return 'live';
+
+    // highlights আছে (এবং live নয়)
     if (match.highlights) return 'highlights';
-    // কিছুই নেই — time check
-    if (now > matchMs + graceMs) return 'expired';
+
+    // expired — match_time + grace পার হয়ে গেছে, কোনো URL নেই
+    if (matchMs > 0 && now > matchMs + graceMs) return 'expired';
+
+    // match_time আসেনি এখনো — countdown
     return 'countdown';
   }
 
@@ -6039,13 +6155,13 @@ if ('serviceWorker' in navigator) {
     var flagB = _getSportsFlagUrl(match.flag_b || '');
     var teamA = match.team_a || 'Team A';
     var teamB = match.team_b || 'Team B';
-    var stage = match.stage || '';
+    var title = match.title || '';
     var isLive = state === 'live';
     var isHighlights = state === 'highlights';
     var hasIntro = !!(match.intro);
     var hasDirect = !!(match.direct);
     var hasHighlights = !!(match.highlights);
-    var clickable = isLive || isHighlights || hasIntro || hasDirect;
+    var clickable = isLive || isHighlights || hasIntro || hasDirect || !!(match.stream_url);
 
     var flagHtml = function(src, name) {
       return src
@@ -6053,20 +6169,20 @@ if ('serviceWorker' in navigator) {
         : '<span class="sports-flag-fallback">' + name.substring(0,3).toUpperCase() + '</span>';
     };
 
-    // Status + stage পাশাপাশি
     var statusRowHtml;
     if (isLive) {
-      statusRowHtml = '<div class="sports-status-row">' + (stage ? '<span class="sports-stage">' + stage + '</span>' : '') + '<div class="sports-live-badge"><span class="tv-live-pulse"></span>LIVE</div></div>';
+      statusRowHtml = '<div class="sports-status-row"><div class="sports-live-badge"><span class="tv-live-pulse"></span>LIVE</div></div>';
     } else if (isHighlights) {
-      statusRowHtml = '<div class="sports-status-row">' + (stage ? '<span class="sports-stage">' + stage + '</span>' : '') + '<div class="sports-highlights-badge"><span class="sports-highlights-icon">▶</span>HIGHLIGHTS</div></div>';
+      statusRowHtml = '<div class="sports-status-row"><div class="sports-highlights-badge">HIGHLIGHTS</div></div>';
     } else {
-      statusRowHtml = '<div class="sports-status-row">' + (stage ? '<span class="sports-stage">' + stage + '</span>' : '') + '<div class="sports-countdown" id="scd-' + key + '" data-matchtime="' + (match.match_time || 0) + '">--:--</div></div>';
+      statusRowHtml = '<div class="sports-status-row"><div class="sports-countdown" id="scd-' + key + '" data-matchtime="' + (match.match_time || 0) + '">--:--</div></div>';
     }
+    var titleHtml = title ? '<div class="sports-card-title">' + title + '</div>' : '';
 
     var onclickAttr = clickable ? 'onclick="openSportsStream(\'' + key + '\')"' : '';
     var disabledClass = clickable ? '' : ' sports-card-disabled';
 
-    return '<div class="sports-match-card' + disabledClass + '" id="smc-' + key + '" style="animation-delay:' + (idx * 0.07) + 's" ' + onclickAttr + '>'      + '<span class="sports-card-trophy">🏆</span>'      + '<div class="sports-card-inner">'      + '<div class="sports-teams-row">'      + '<div class="sports-team">'      + flagHtml(flagA, teamA)      + '<span class="sports-team-name">' + teamA + '</span>'      + '</div>'      + '<div class="sports-vs">VS</div>'      + '<div class="sports-team">'      + flagHtml(flagB, teamB)      + '<span class="sports-team-name">' + teamB + '</span>'      + '</div>'      + '</div>'      + statusRowHtml      + '</div>'      + '</div>';
+    return '<div class="sports-match-card' + disabledClass + '" id="smc-' + key + '" style="animation-delay:' + (idx * 0.07) + 's" ' + onclickAttr + '>'      + '<span class="sports-card-trophy">🏆</span>'      + '<div class="sports-card-inner">'      + titleHtml      + '<div class="sports-teams-row">'      + '<div class="sports-team">'      + flagHtml(flagA, teamA)      + '<span class="sports-team-name">' + teamA + '</span>'      + '</div>'      + '<div class="sports-vs">VS</div>'      + '<div class="sports-team">'      + flagHtml(flagB, teamB)      + '<span class="sports-team-name">' + teamB + '</span>'      + '</div>'      + '</div>'      + statusRowHtml      + '</div>'      + '</div>';
   }
 
     function _startSportsCountdowns() {
@@ -6157,31 +6273,104 @@ if ('serviceWorker' in navigator) {
     playerWrap.innerHTML = '';
     playerWrap.style.display = '';
 
-    var loopAttr = isIntroLoop ? ' loop' : '';
-    if (url.match(/\.m3u8/i) || url.includes('m3u8')) {
-      var vid = document.createElement('video');
-      vid.controls = true; vid.autoplay = true; vid.playsInline = true;
-      if (isIntroLoop) vid.loop = true;
-      vid.setAttribute('controlsList', 'nodownload noplaybackrate');
-      vid.setAttribute('disablepictureinpicture', '');
-      vid.style.cssText = 'width:100%;height:100%;background:#000;display:block;';
-      if (window.Hls && Hls.isSupported()) {
-        var hls = new Hls({ lowLatencyMode: true });
-        hls.loadSource(url); hls.attachMedia(vid);
-        playerWrap._hls = hls;
-      } else if (vid.canPlayType('application/vnd.apple.mpegurl')) {
-        vid.src = url;
+    // stream_url comma-separated হলে split করো
+    var streamUrls = match.stream_url
+      ? match.stream_url.split(',').map(function(u) { return u.trim(); }).filter(Boolean)
+      : [];
+    var activeUrlIndex = 0;
+    url = streamUrls.length ? streamUrls[0] : (match.highlights || match.intro);
+
+    // server switcher bar — একাধিক URL থাকলেই দেখাবে
+    var serverBar = document.getElementById('sportsServerBar');
+    if (serverBar) {
+      if (streamUrls.length > 1) {
+        serverBar.innerHTML = streamUrls.map(function(u, i) {
+          return '<button class="sp-server-btn' + (i === 0 ? ' active' : '') + '" data-idx="' + i + '">Server ' + (i + 1) + '</button>';
+        }).join('');
+        serverBar.style.display = 'flex';
+        serverBar.onclick = function(e) {
+          var btn = e.target.closest('.sp-server-btn');
+          if (!btn) return;
+          var idx = parseInt(btn.getAttribute('data-idx'));
+          if (idx === activeUrlIndex) return;
+          activeUrlIndex = idx;
+          serverBar.querySelectorAll('.sp-server-btn').forEach(function(b) { b.classList.remove('active'); });
+          btn.classList.add('active');
+          _loadSportsUrl(streamUrls[idx], playerWrap, false);
+        };
+      } else {
+        serverBar.innerHTML = '';
+        serverBar.style.display = 'none';
       }
-      playerWrap.appendChild(vid);
-    } else if (url.match(/\.mp4/i) || url.match(/\.(webm|ogg)/i)) {
-      playerWrap.innerHTML = '<video src="' + url + '" controls autoplay playsinline' + loopAttr + ' disablepictureinpicture controlsList="nodownload noplaybackrate" style="width:100%;height:100%;background:#000;display:block;"></video>';
-    } else {
-      playerWrap.innerHTML = '<iframe src="' + url + '" frameborder="0" allow="autoplay; fullscreen" allowfullscreen style="width:100%;height:100%;display:block;"></iframe>';
     }
+
+    function _loadSportsUrl(srcUrl, wrap, loop) {
+      if (wrap._hls) { wrap._hls.destroy(); wrap._hls = null; }
+      if (wrap._retryTimer) { clearTimeout(wrap._retryTimer); wrap._retryTimer = null; }
+      wrap.innerHTML = '';
+      if (srcUrl.match(/\.m3u8/i) || srcUrl.includes('m3u8')) {
+        var v = document.createElement('video');
+        v.controls = true; v.autoplay = true; v.playsInline = true;
+        if (loop) v.loop = true;
+        v.setAttribute('controlsList', 'nodownload noplaybackrate');
+        v.setAttribute('disablepictureinpicture', '');
+        v.style.cssText = 'width:100%;height:100%;background:#000;display:block;';
+        if (window.Hls && Hls.isSupported()) {
+          var hls = new Hls({
+            lowLatencyMode: true,
+            backBufferLength: 90,
+            maxBufferLength: 60,
+            maxMaxBufferLength: 120,
+            maxBufferSize: 120 * 1000 * 1000,
+            maxBufferHole: 0.5,
+            highBufferWatchdogPeriod: 2,
+            nudgeMaxRetry: 5,
+            startLevel: -1,
+            abrEwmaFastLive: 3.0,
+            abrEwmaSlowLive: 9.0,
+            liveSyncDurationCount: 5,
+            liveMaxLatencyDurationCount: 30
+          });
+          hls.on(Hls.Events.MANIFEST_PARSED, function(event, data) {
+            // সবচেয়ে কম bitrate এর level select করো, auto-switching বন্ধ করে দেয়
+            var levels = data.levels;
+            var lowestIdx = 0;
+            for (var i = 1; i < levels.length; i++) {
+              if (levels[i].bitrate < levels[lowestIdx].bitrate) lowestIdx = i;
+            }
+            hls.currentLevel = lowestIdx;
+            v.play().catch(function(){});
+          });
+          hls.loadSource(srcUrl); hls.attachMedia(v);
+          wrap._hls = hls;
+        } else if (v.canPlayType('application/vnd.apple.mpegurl')) {
+          v.src = srcUrl;
+        }
+        wrap.appendChild(v);
+      } else if (srcUrl.match(/\.mp4/i) || srcUrl.match(/\.(webm|ogg)/i)) {
+        wrap.innerHTML = '<video src="' + srcUrl + '" controls autoplay playsinline' + (loop ? ' loop' : '') + ' disablepictureinpicture controlsList="nodownload noplaybackrate" style="width:100%;height:100%;background:#000;display:block;"></video>';
+      } else {
+        wrap.innerHTML = '<iframe src="' + srcUrl + '" frameborder="0" allow="autoplay; fullscreen" allowfullscreen style="width:100%;height:100%;display:block;"></iframe>';
+      }
+    }
+
+    _loadSportsUrl(url, playerWrap, isIntroLoop);
 
     // topbar title
     var topTitle = document.getElementById('wvmTopTitle');
     if (topTitle) topTitle.textContent = isHighlights ? title + ' · Highlights' : title;
+
+    // sports topbar title + live badge
+    var spTitle = document.getElementById('sportsPlayerTitle');
+    var spLive  = document.getElementById('sportsPlayerLiveBadge');
+    if (spTitle) spTitle.textContent = title;
+    if (spLive) {
+      if (!isHighlights && !isIntroLoop) {
+        spLive.classList.add('visible');
+      } else {
+        spLive.classList.remove('visible');
+      }
+    }
 
     // description ও seo tags clear করো (TV/video থেকে আসা data সরাতে)
     var _sDesc = document.getElementById('wvmDescText');
@@ -6191,11 +6380,47 @@ if ('serviceWorker' in navigator) {
     if (_sDescBox) _sDescBox.style.display = 'none';
     if (_sSeo)  _sSeo.innerHTML = '';
 
+    // sports desc box
+    var _spDescBox = document.getElementById('spDescBox');
+    if (_spDescBox) {
+      if (match.desc) {
+        _spDescBox.innerHTML = _spMd(match.desc);
+        _spDescBox.style.display = 'block';
+      } else {
+        _spDescBox.innerHTML = '';
+        _spDescBox.style.display = 'none';
+      }
+    }
+
+    function _spMd(t) {
+      var s = t
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,'<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
+        .replace(/^### (.+)$/gm,'<h3>$1</h3>')
+        .replace(/^## (.+)$/gm,'<h2>$1</h2>')
+        .replace(/^# (.+)$/gm,'<h1>$1</h1>')
+        .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+        .replace(/__(.+?)__/g,'<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g,'<em>$1</em>')
+        .replace(/_(.+?)_/g,'<em>$1</em>')
+        .replace(/`(.+?)`/g,'<code>$1</code>')
+        .replace(/^---$/gm,'<hr>')
+        .replace(/^\* (.+)$/gm,'<li>$1</li>')
+        .replace(/^- (.+)$/gm,'<li>$1</li>')
+        .replace(/^\d+\. (.+)$/gm,'<li>$1</li>');
+      s = s.replace(/(<li>[\s\S]*?<\/li>)/g,'<ul>$1</ul>');
+      s = s.split('\n\n').join('</p><p>');
+      s = s.split('\n').join('<br>');
+      s = s.replace(/^(?!<[hul]|<hr|<br)(.+)/gm,'<p>$1</p>');
+      s = s.replace(/<p><\/p>/g,'');
+      return s;
+    }
+
     // Media Session
     if ('mediaSession' in navigator) {
       navigator.mediaSession.metadata = new MediaMetadata({
         title:  title,
-        artist: 'Stream Today',
+        artist: 'CastFM',
         album:  match.stage || 'Sports Live',
         artwork: []
       });
@@ -6292,27 +6517,22 @@ if ('serviceWorker' in navigator) {
           if (isLv) {
             badge2 = '<div class="sports-live-badge"><span class="tv-live-pulse"></span>LIVE</div>';
           } else if (isHl) {
-            badge2 = '<div class="sports-highlights-badge"><span class="sports-highlights-icon">&#9654;</span>HIGHLIGHTS</div>';
+            badge2 = '<div class="sports-highlights-badge">HIGHLIGHTS</div>';
           } else {
             badge2 = '<div class="sports-countdown" id="smmc-scd-' + k2 + '" data-matchtime="' + (m.match_time || 0) + '">--:--</div>';
           }
-          var bottom2 = '<div class="sports-card-bottom">'
-            + (m.stage ? '<span class="sports-card-stage">' + m.stage + '</span>' : '')
-            + badge2
-            + (m.match_time ? '<span class="sports-card-time">' + _formatMatchTime(m.match_time) + '</span>' : '')
-            + (m.title ? '<span class="sports-card-title">' + m.title + '</span>' : '')
-            + '</div>';
           var oc2 = click2 ? 'onclick="openSportsStream(\'' + k2 + '\')"' : '';
           var dc2 = click2 ? '' : ' sports-card-disabled';
           return '<div class="sports-modal-card watch-sports-inline-card' + dc2 + '" id="smmc-' + k2 + '" style="animation-delay:' + (i * 0.07) + 's" ' + oc2 + '>'
             + '<span class="sports-card-trophy">&#127942;</span>'
             + '<div class="sports-card-inner">'
+            + (m.title ? '<div class="sports-card-title">' + m.title + '</div>' : '')
             + '<div class="sports-teams-row">'
             + '<div class="sports-team">' + fHtml(fA, tA) + '<span class="sports-team-name">' + tA + '</span></div>'
             + '<div class="sports-vs">VS</div>'
             + '<div class="sports-team">' + fHtml(fB, tB) + '<span class="sports-team-name">' + tB + '</span></div>'
             + '</div>'
-            + bottom2
+            + '<div class="sports-card-bottom">' + badge2 + '</div>'
             + '</div>'
             + '</div>';
         }).join('');
@@ -6325,6 +6545,10 @@ if ('serviceWorker' in navigator) {
 
     // mark as sports stream (close করলে restore করার জন্য)
     modal._isSportsStream = true;
+
+    // sports player: full black mode
+    modal.classList.add('sports-mode');
+    document.body.classList.add('sports-player-open');
 
     // modal open
     modal.classList.add('open');
@@ -6501,7 +6725,21 @@ if ('serviceWorker' in navigator) {
       vid.setAttribute('controlsList', 'nodownload noplaybackrate'); vid.setAttribute('disablepictureinpicture', '');
       vid.style.cssText = 'width:100%;height:100%;background:#000;display:block;';
       if (window.Hls && Hls.isSupported()) {
-        var hls = new Hls({ lowLatencyMode: true });
+        var hls = new Hls({
+          lowLatencyMode: true,
+          backBufferLength: 90,
+          maxBufferLength: 30,
+          maxMaxBufferLength: 60,
+          maxBufferSize: 60 * 1000 * 1000,
+          maxBufferHole: 0.5,
+          highBufferWatchdogPeriod: 2,
+          nudgeMaxRetry: 5,
+          startLevel: -1,
+          abrEwmaFastLive: 3.0,
+          abrEwmaSlowLive: 9.0,
+          liveSyncDurationCount: 2,
+          liveMaxLatencyDurationCount: 4
+        });
         hls.loadSource(url); hls.attachMedia(vid);
         hls.on(Hls.Events.ERROR, function(evt, data) {
           if (data.fatal) {
@@ -6537,7 +6775,7 @@ if ('serviceWorker' in navigator) {
       ] : [];
       navigator.mediaSession.metadata = new MediaMetadata({
         title:  ch.name  || 'Live TV',
-        artist: 'Stream Today',
+        artist: 'CastFM',
         album:  'Live TV',
         artwork: tvArtwork
       });
@@ -6865,7 +7103,22 @@ if ('serviceWorker' in navigator) {
       // overlay সরাও, HLS reload করো — view count বাড়বে না
       overlay.remove();
       if (window.Hls && Hls.isSupported()) {
-        var hls = new Hls({ enableWorker: false });
+        var hls = new Hls({
+          enableWorker: true,
+          lowLatencyMode: true,
+          backBufferLength: 90,
+          maxBufferLength: 30,
+          maxMaxBufferLength: 60,
+          maxBufferSize: 60 * 1000 * 1000,
+          maxBufferHole: 0.5,
+          highBufferWatchdogPeriod: 2,
+          nudgeMaxRetry: 5,
+          startLevel: -1,
+          abrEwmaFastLive: 3.0,
+          abrEwmaSlowLive: 9.0,
+          liveSyncDurationCount: 2,
+          liveMaxLatencyDurationCount: 4
+        });
         hls.loadSource(url);
         hls.attachMedia(vid);
         hls.on(Hls.Events.MANIFEST_PARSED, function() { vid.play().catch(function(){}); });
@@ -7905,9 +8158,9 @@ if ('serviceWorker' in navigator) {
   window._dAllStationsFilter = debounce(allStationsFilter, 150);
 /* ═══════════════════════════════════════════════ */
 // ── EPISODE AUDIO CACHE (Cache API) ──
-  var EP_CACHE_NAME   = 'streamtoday-ep-audio-v1';
+  var EP_CACHE_NAME   = 'castfm-ep-audio-v1';
   var EP_CACHE_MAX    = 10;
-  var THUMB_CACHE_NAME = 'streamtoday-thumb-v1';
+  var THUMB_CACHE_NAME = 'castfm-thumb-v1';
   var THUMB_CACHE_MAX  = 100; // সর্বোচ্চ ১০০টি thumbnail cache রাখবে
   // cache থেকে বা network থেকে audio src সেট করে play করে
   window.playEpWithCache = async function(audio, url, onReady) {
@@ -7990,7 +8243,7 @@ if ('serviceWorker' in navigator) {
     var currentVer = (typeof CURRENT_VERSION !== 'undefined') ? CURRENT_VERSION : null;
     if (!currentVer) return;
     // GitHub এর version.json থেকে latest version নাও
-    fetch('https://streamtoday.pages.dev/version.json?t=' + Date.now())
+    fetch('https://castfm.pages.dev/version.json?t=' + Date.now())
           .then(function(r) { return r.json(); })
           .then(function(data) {
             var latestVer = data.version;
@@ -8244,8 +8497,8 @@ var _bmEmptyHtml = '<div style="display:flex;flex-direction:column;align-items:c
   window._dSavedVideosFilter     = _dSavedVideosFilter;
   window._dBookmarkedEpsFilter   = _dBookmarkedEpsFilter;
 /* ═══════════════════════════════════════════════ */
-var _historyVideo   = JSON.parse(localStorage.getItem('streamtoday_hist_video') || '[]');
-  var _historyEpisode = JSON.parse(localStorage.getItem('streamtoday_hist_episode') || '[]');
+var _historyVideo   = JSON.parse(localStorage.getItem('castfm_hist_video') || '[]');
+  var _historyEpisode = JSON.parse(localStorage.getItem('castfm_hist_episode') || '[]');
   // Migrate: ts নেই এমন পুরনো items কে yesterday এর timestamp দাও
   (function() {
     var yesterday = Date.now() - 86400000;
@@ -8253,8 +8506,8 @@ var _historyVideo   = JSON.parse(localStorage.getItem('streamtoday_hist_video') 
     _historyVideo.forEach(function(v) { if (!v.ts) { v.ts = yesterday; changed = true; } });
     _historyEpisode.forEach(function(ep) { if (!ep.ts) { ep.ts = yesterday; changed = true; } });
     if (changed) {
-      localStorage.setItem('streamtoday_hist_video', JSON.stringify(_historyVideo));
-      localStorage.setItem('streamtoday_hist_episode', JSON.stringify(_historyEpisode));
+      localStorage.setItem('castfm_hist_video', JSON.stringify(_historyVideo));
+      localStorage.setItem('castfm_hist_episode', JSON.stringify(_historyEpisode));
     }
   })();
   setTimeout(function() {
@@ -8270,7 +8523,7 @@ var _historyVideo   = JSON.parse(localStorage.getItem('streamtoday_hist_video') 
     }
     _historyVideo.unshift({ _key: v._key, title: v.title || '', thumb: v.thumb || v.img || '', channel: v.channel || '', ts: now });
     if (_historyVideo.length > 100) _historyVideo = _historyVideo.slice(0, 100);
-    localStorage.setItem('streamtoday_hist_video', JSON.stringify(_historyVideo));
+    localStorage.setItem('castfm_hist_video', JSON.stringify(_historyVideo));
     _syncHistoryToFirebase();
   };
   window.addEpisodeHistory = function(ep) {
@@ -8283,7 +8536,7 @@ var _historyVideo   = JSON.parse(localStorage.getItem('streamtoday_hist_video') 
     }
     _historyEpisode.unshift({ _key: ep._key, title: ep.title || '', img: ep.img || '', channel: ep.channel || ep.artist || ep.category || '', ts: now });
     if (_historyEpisode.length > 100) _historyEpisode = _historyEpisode.slice(0, 100);
-    localStorage.setItem('streamtoday_hist_episode', JSON.stringify(_historyEpisode));
+    localStorage.setItem('castfm_hist_episode', JSON.stringify(_historyEpisode));
     _syncHistoryToFirebase();
   };
   function _syncHistoryToFirebase() {
@@ -8299,8 +8552,8 @@ var _historyVideo   = JSON.parse(localStorage.getItem('streamtoday_hist_video') 
       .then(function(snap) {
         if (!snap.exists()) return;
         var d = snap.val();
-        if (d.video)   { _historyVideo   = d.video;   localStorage.setItem('streamtoday_hist_video',   JSON.stringify(d.video)); }
-        if (d.episode) { _historyEpisode = d.episode; localStorage.setItem('streamtoday_hist_episode', JSON.stringify(d.episode)); }
+        if (d.video)   { _historyVideo   = d.video;   localStorage.setItem('castfm_hist_video',   JSON.stringify(d.video)); }
+        if (d.episode) { _historyEpisode = d.episode; localStorage.setItem('castfm_hist_episode', JSON.stringify(d.episode)); }
         if (typeof renderSidebarCats === 'function') renderSidebarCats();
       }).catch(function(){});
   }
@@ -8326,8 +8579,8 @@ var _historyVideo   = JSON.parse(localStorage.getItem('streamtoday_hist_video') 
       .then(function(snap) {
         if (!snap.exists()) return;
         var d = snap.val();
-        if (d.video)   { _historyVideo   = d.video;   localStorage.setItem('streamtoday_hist_video',   JSON.stringify(d.video)); }
-        if (d.episode) { _historyEpisode = d.episode; localStorage.setItem('streamtoday_hist_episode', JSON.stringify(d.episode)); }
+        if (d.video)   { _historyVideo   = d.video;   localStorage.setItem('castfm_hist_video',   JSON.stringify(d.video)); }
+        if (d.episode) { _historyEpisode = d.episode; localStorage.setItem('castfm_hist_episode', JSON.stringify(d.episode)); }
       }).catch(function(){});
   }
   if (window._fbOnAuth) {
@@ -8758,7 +9011,7 @@ var _historyVideo   = JSON.parse(localStorage.getItem('streamtoday_hist_video') 
       var pubDate = getXmlText(item, 'pubDate');
       var thumb   = getThumb(item);
       var proxyThumb = thumb ? (IMG_WORKER + encodeURIComponent(thumb)) : '';
-      var FALLBACK = 'https://streamtoday.pages.dev/photos/c2zf4n5pbmik3rqeiitj.jpg';
+      var FALLBACK = 'https://castfm.pages.dev/photos/c2zf4n5pbmik3rqeiitj.jpg';
       var thumbSrc = proxyThumb || FALLBACK;
       var onerrorAttr = proxyThumb ? 'onerror="this.src=\'' + FALLBACK + '\'"' : '';
       return '<a class="explore-news-item" style="animation-delay:' + (i * 0.07) + 's" href="' + link + '" target="_blank" rel="noopener">' +
@@ -8839,7 +9092,7 @@ var _historyVideo   = JSON.parse(localStorage.getItem('streamtoday_hist_video') 
     var end = Math.min(start + _newsModal.perPage, _newsModal.allItems.length);
     var batch = _newsModal.allItems.slice(start, end);
     var list = document.getElementById('newsModalList');
-    var FALLBACK = 'https://streamtoday.pages.dev/photos/c2zf4n5pbmik3rqeiitj.jpg';
+    var FALLBACK = 'https://castfm.pages.dev/photos/c2zf4n5pbmik3rqeiitj.jpg';
 
     var html = batch.map(function(item, i) {
       var title   = getXmlText(item, 'title');
@@ -8894,7 +9147,7 @@ var _historyVideo   = JSON.parse(localStorage.getItem('streamtoday_hist_video') 
     document.getElementById('newsModalSentinel').style.display = 'none';
     if (_newsModal.observer) _newsModal.observer.disconnect();
 
-    var FALLBACK = 'https://streamtoday.pages.dev/photos/c2zf4n5pbmik3rqeiitj.jpg';
+    var FALLBACK = 'https://castfm.pages.dev/photos/c2zf4n5pbmik3rqeiitj.jpg';
     var filtered = _newsModal.allItems.filter(function(item) {
       return getXmlText(item, 'title').toLowerCase().indexOf(q) !== -1;
     });
