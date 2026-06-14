@@ -4,13 +4,14 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
     import { getDatabase, ref, set, get, update, onValue, increment, onDisconnect, push, query, limitToLast, orderByKey, endBefore }
       from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
     const firebaseConfig = {
-      apiKey: "AIzaSyBF2gEK7vuWw6SIYJ5TVPejiBGrk9VL4nw",
-      authDomain: "dk-stream-453f1.firebaseapp.com",
-      projectId: "dk-stream-453f1",
-      storageBucket: "dk-stream-453f1.firebasestorage.app",
-      messagingSenderId: "466322150999",
-      appId: "1:466322150999:web:7dab2f91572fd05cd03512",
-      databaseURL: "https://dk-stream-453f1-default-rtdb.asia-southeast1.firebasedatabase.app"
+      apiKey: "AIzaSyAikt1OPSzW_tm_Kl1xmSA8nm6U56ss2ZY",
+      authDomain: "castfm-devs.firebaseapp.com",
+      projectId: "castfm-devs",
+      storageBucket: "castfm-devs.firebasestorage.app",
+      messagingSenderId: "393264903213",
+      appId: "1:393264903213:web:dd7a2547fd9ffab50c34a4",
+      measurementId: "G-G1K7ES0N45",
+      databaseURL: "https://castfm-devs-default-rtdb.asia-southeast1.firebasedatabase.app"
     };
     const app    = initializeApp(firebaseConfig);
     const auth   = getAuth(app);
