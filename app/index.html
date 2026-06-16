@@ -1,1 +1,454 @@
-.
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-G1K7ES0N45"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-G1K7ES0N45');
+</script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stream2Day – Download App</title>
+  <meta property="og:title" content="Stream2Day – Download App" />
+  <meta property="og:description" content="মুভি, নাটক, পডকাস্ট, টিভি, রেডিও সবকিছু এক জায়গায়!" />
+  <meta property="og:image" content="https://stream2day.com/app/Stream2Day.jpg" />
+  <meta property="og:url" content="https://stream2day.com/app/Stream2Day.apk" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&family=Noto+Sans+Bengali:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #111110;
+      --surface: #1a1a19;
+      --surface2: #222220;
+      --border: #2e2e2b;
+      --border2: #3a3a36;
+      --text: #f0f0ee;
+      --muted: #888882;
+      --muted2: #a0a09a;
+      --accent: #cc1f1f;
+      --accent2: #b91c1c;
+      --accent-light: rgba(185,28,28,0.12);
+      --accent-glow: rgba(185,28,28,0.30);
+    }
+    html, body {
+      min-height: 100vh; background: var(--bg);
+      font-family: 'DM Sans', sans-serif; color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page-wrap { max-width: 480px; margin: 0 auto; padding-bottom: 40px; }
+
+    .top-section { padding: 20px 16px 16px; }
+    .app-header { display: flex; gap: 16px; align-items: flex-start; }
+    .app-icon {
+      width: 80px; height: 80px; border-radius: 18px; flex-shrink: 0;
+      overflow: hidden; border: 1px solid var(--border);
+    }
+    .app-icon img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .app-header-info { flex: 1; padding-top: 2px; }
+    .app-name {
+      font-size: 1.35rem; font-weight: 700; color: var(--text);
+      letter-spacing: -0.02em; line-height: 1.2;
+      display: flex; align-items: center; gap: 0;
+    }
+    .app-name .fm { color: var(--accent); }
+    .app-dev { font-size: 0.82rem; color: var(--accent); font-weight: 600; margin-top: 4px; }
+    .app-sub { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+
+    .logo-live-dot {
+      border-radius: 50%; background: #22c55e;
+      box-shadow: 0 0 0 2px rgba(34,197,94,0.2);
+      animation: logo-pulse 2s ease-in-out infinite;
+      flex-shrink: 0; display: inline-block;
+    }
+    @keyframes logo-pulse {
+      0%,100% { box-shadow: 0 0 0 2px rgba(34,197,94,0.25); opacity: 1; }
+      50%      { box-shadow: 0 0 0 5px transparent; opacity: 0.4; }
+    }
+
+    .stats-row {
+      display: flex; align-items: center;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      margin: 16px 0 0;
+    }
+    .stat-col {
+      flex: 1; text-align: center; padding: 12px 6px;
+      border-right: 1px solid var(--border);
+    }
+    .stat-col:last-child { border-right: none; }
+    .stat-val {
+      font-size: 0.85rem; font-weight: 700; color: var(--text);
+      display: flex; align-items: center; justify-content: center; gap: 3px;
+    }
+    .stat-val .star { color: #b91c1c; font-size: 0.9rem; }
+    .stat-sub { font-size: 0.65rem; color: var(--muted); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.03em; }
+
+    .install-wrap { padding: 14px 16px 0; }
+    .btn-install {
+      display: block; width: 100%; padding: 14px;
+      background: var(--accent); color: #fff;
+      border: none; border-radius: 999px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem; font-weight: 700;
+      text-align: center; text-decoration: none;
+      cursor: pointer; transition: background 0.18s, transform 0.12s;
+      -webkit-tap-highlight-color: transparent;
+      box-shadow: 0 2px 12px var(--accent-glow);
+    }
+    .btn-install:active { transform: scale(0.97); background: var(--accent2); }
+
+    .screenshots-wrap {
+      padding: 20px 0 0;
+      overflow-x: auto; overflow-y: hidden;
+      scrollbar-width: none;
+      display: flex; gap: 10px; align-items: flex-start;
+      padding-left: 16px; padding-right: 16px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .screenshots-wrap::-webkit-scrollbar { display: none; }
+    .screenshot-item {
+      flex-shrink: 0;
+      width: 160px;
+      border-radius: 12px; overflow: hidden;
+      border: 1px solid var(--border);
+      background: #2a2a28;
+    }
+    .screenshot-item img { width: 100%; height: auto; display: block; }
+
+    .divider { height: 1px; background: var(--border); margin: 20px 16px 0; }
+
+    .version-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 16px 0;
+    }
+    .version-label { font-size: 0.82rem; color: var(--muted); }
+    .version-val { font-size: 0.82rem; font-weight: 600; color: var(--text); }
+
+    footer { text-align: center; padding: 28px 16px 0; color: var(--muted); font-size: 0.72rem; }
+    footer a { color: var(--accent); text-decoration: none; }
+
+    #toast {
+      position: fixed; bottom: 28px; left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #111; color: #fff;
+      font-size: 0.85rem; font-weight: 500;
+      padding: 12px 22px; border-radius: 14px;
+      white-space: nowrap; opacity: 0; pointer-events: none;
+      transition: all 0.3s cubic-bezier(0.34,1.3,0.64,1); z-index: 999;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+
+
+    .btn-install { position: relative; overflow: hidden; }
+    .btn-install.installing { background: var(--accent2); cursor: not-allowed; }
+    .btn-install.done { background: #22c55e; }
+    @keyframes btn-fill {
+      from { background-position: -100% 0; }
+      to   { background-position: 0 0; }
+    }
+
+    .rating-section {
+      padding: 20px 16px 0;
+    }
+    .rating-title {
+      font-size: 0.78rem; color: var(--muted); text-transform: uppercase;
+      letter-spacing: 0.05em; font-weight: 600; margin-bottom: 12px;
+    }
+    .stars-wrap {
+      display: flex; gap: 6px; justify-content: center;
+      margin-bottom: 10px;
+    }
+    .star-btn {
+      font-size: 2.2rem; background: none; border: none;
+      cursor: pointer; color: #d1d5db;
+      transition: transform 0.15s, color 0.15s;
+      -webkit-tap-highlight-color: transparent;
+      line-height: 1;
+    }
+    .star-btn.active, .star-btn.hover { color: #FBBF24; transform: scale(1.15); }
+    .rating-meta {
+      text-align: center; font-size: 0.75rem; color: var(--muted); margin-top: 4px;
+    }
+    .rating-thanks {
+      text-align: center; font-size: 0.85rem; font-weight: 600;
+      color: #22c55e; margin-top: 8px; min-height: 22px;
+    }
+
+  </style>
+
+</head>
+<body>
+<div class="page-wrap">
+
+  <div class="top-section">
+    <div class="app-header">
+      <div class="app-icon">
+        <img src="https://stream2day.com/app/Stream2Day.jpg" alt="Stream2Day">
+      </div>
+      <div class="app-header-info">
+        <div class="app-name">
+          Stream<span style="color:var(--accent);">2Day</span>
+        </div>
+        <div style="font-size:0.78rem;color:var(--muted);margin-top:2px;font-weight:400;">Live TV, FM, Movies, Podcast</div>
+        <div class="app-sub">Free · <span id="apkVersion">v3.2.1</span></div>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-col">
+        <div class="stat-val">...<span class="star">★</span></div>
+        <div class="stat-sub">Rating</div>
+      </div>
+      <div class="stat-col">
+        <div class="stat-val" id="downloadCount">...</div>
+        <div class="stat-sub">Downloads</div>
+      </div>
+      <div class="stat-col">
+        <div class="stat-val" id="sizeVal">~2 MB</div>
+        <div class="stat-sub">Size</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="install-wrap">
+    <button class="btn-install" id="installBtn" onclick="handleDownload(event)">
+      <span id="btnText">Install APK</span>
+      <svg id="btnProgress" style="display:none;vertical-align:middle;margin-left:8px;" width="20" height="20" viewBox="0 0 20 20">
+        <circle cx="10" cy="10" r="8" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2.5"/>
+        <circle id="progressCircle" cx="10" cy="10" r="8" fill="none" stroke="#fff" stroke-width="2.5"
+          stroke-dasharray="50.27" stroke-dashoffset="50.27" stroke-linecap="round"
+          style="transform:rotate(-90deg);transform-origin:center;transition:stroke-dashoffset 0.1s linear;"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="screenshots-wrap">
+    <div class="screenshot-item"><img src="https://stream2day.com/app/0.jpg" alt="Screenshot 1"></div>
+    <div class="screenshot-item"><img src="https://stream2day.com/app/1.jpg" alt="Screenshot 2"></div>
+    <div class="screenshot-item"><img src="https://stream2day.com/app/2.jpg" alt="Screenshot 3"></div>
+    <div class="screenshot-item"><img src="https://stream2day.com/app/3.jpg" alt="Screenshot 4"></div>
+    <div class="screenshot-item"><img src="https://stream2day.com/app/4.jpg" alt="Screenshot 5"></div>
+  </div>
+
+  <!-- Adsterra Ad -->
+  <div style="display:flex;justify-content:center;margin:20px 0 0;">
+    <script>
+      atOptions = {
+        'key' : '84958ff7cc558edb02474a5549d6d90b',
+        'format' : 'iframe',
+        'height' : 50,
+        'width' : 320,
+        'params' : {}
+      };
+    </script>
+    <script src="https://www.highperformanceformat.com/84958ff7cc558edb02474a5549d6d90b/invoke.js"></script>
+  </div>
+
+  <div class="divider"></div>
+  <div class="rating-section">
+    <div class="stars-wrap" id="starsWrap">
+      <button class="star-btn" data-val="1">★</button>
+      <button class="star-btn" data-val="2">★</button>
+      <button class="star-btn" data-val="3">★</button>
+      <button class="star-btn" data-val="4">★</button>
+      <button class="star-btn" data-val="5">★</button>
+    </div>
+    <div class="rating-meta" id="ratingMeta">Loading...</div>
+    <div class="rating-thanks" id="ratingThanks"></div>
+  </div>
+</div>
+
+<div id="toast">⬇️ Download শুরু হচ্ছে...</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getDatabase, ref, runTransaction, onValue, get, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAikt1OPSzW_tm_Kl1xmSA8nm6U56ss2ZY",
+    authDomain: "castfm-devs.firebaseapp.com",
+    databaseURL: "https://castfm-devs-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "castfm-devs",
+    storageBucket: "castfm-devs.firebasestorage.app",
+    messagingSenderId: "393264903213",
+    appId: "1:393264903213:web:dd7a2547fd9ffab50c34a4",
+    measurementId: "G-G1K7ES0N45"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  runTransaction(ref(db, "app_download_page/pageVisits"), (current) => {
+    return (current || 0) + 1;
+  });
+
+  onValue(ref(db, "app_download_page/pageVisits"), (snapshot) => {
+    window._pageViews = snapshot.val() || 0;
+    const el = document.getElementById("pageViewCount");
+    if (el) el.textContent = window._pageViews >= 10000 ? (window._pageViews / 1000).toFixed(1) + "K" : window._pageViews;
+    updateRatingMeta();
+  });
+
+  onValue(ref(db, "app_download_page/installClicks"), (snapshot) => {
+    const count = snapshot.val() || 0;
+    const el = document.getElementById("downloadCount");
+    if (el) el.textContent = count >= 10000 ? (count / 1000).toFixed(1) + "K" : count;
+  });
+
+  window.trackInstallClick = function() {
+    runTransaction(ref(db, "app_download_page/installClicks"), (current) => {
+      return (current || 0) + 1;
+    });
+  };
+
+  function updateRatingMeta() {
+    get(ref(db, "app_download_page/ratings")).then((snap) => {
+      const data = snap.val();
+      const views = window._pageViews || 0;
+      const viewsStr = views >= 10000 ? (views / 1000).toFixed(1) + "K" : views;
+      const meta = document.getElementById("ratingMeta");
+      if (!data) { if (meta) meta.textContent = "0 Ratings · " + viewsStr + " Views"; return; }
+      const vals = Object.values(data);
+      const avg = (vals.reduce((a,b) => a+b, 0) / vals.length).toFixed(1);
+      if (meta) meta.textContent = vals.length + " Ratings · " + viewsStr + " Views";
+      const statRating = document.querySelector('.stat-val');
+      if (statRating) statRating.innerHTML = avg + ' <span class="star">★</span>';
+    });
+  }
+  updateRatingMeta();
+
+  if (localStorage.getItem('stream2day_rated')) {
+    document.getElementById("ratingThanks").textContent = "Thanks! Your rating has been saved.";
+    var savedVal = parseInt(localStorage.getItem('stream2day_rating_val') || '0');
+    if (savedVal) {
+      document.querySelectorAll('.star-btn').forEach(function(s) {
+        s.classList.toggle('active', parseInt(s.dataset.val) <= savedVal);
+      });
+    }
+  }
+
+  window.submitRating = function(val) {
+    let uid = localStorage.getItem('stream2day_uid');
+    if (!uid) { uid = 'u_' + Math.random().toString(36).slice(2,10); localStorage.setItem('stream2day_uid', uid); }
+    set(ref(db, "app_download_page/ratings/" + uid), val).then(() => {
+      localStorage.setItem('stream2day_rated', '1');
+      localStorage.setItem('stream2day_rating_val', val);
+      document.getElementById("ratingThanks").textContent = "Thanks! Your rating has been saved.";
+      updateRatingMeta();
+    });
+  };
+</script>
+
+<script>
+  function handleDownload(e) {
+    e.preventDefault();
+    var btn = document.getElementById('installBtn');
+    var btnText = document.getElementById('btnText');
+    var btnProgress = document.getElementById('btnProgress');
+    var circle = document.getElementById('progressCircle');
+
+    if (btn.classList.contains('installing') || btn.classList.contains('done')) return;
+
+    if (typeof window.trackInstallClick === 'function') {
+      window.trackInstallClick();
+    }
+
+    btn.classList.add('installing');
+    btnText.textContent = 'Installing...';
+    btnProgress.style.display = 'inline';
+
+    var total = 2800;
+    var start = Date.now();
+    var circumference = 50.27;
+
+    var timer = setInterval(function() {
+      var elapsed = Date.now() - start;
+      var progress = Math.min(elapsed / total, 1);
+      var offset = circumference * (1 - progress);
+      circle.style.strokeDashoffset = offset;
+
+      if (progress >= 1) {
+        clearInterval(timer);
+        btn.classList.remove('installing');
+        btn.classList.add('done');
+        btnProgress.style.display = 'none';
+        btnText.textContent = '✓ Download শুরু হচ্ছে';
+
+        var a = document.createElement('a');
+        a.href = 'https://stream2day.com/app/Stream2Day.apk';
+        a.download = 'Stream2Day.apk';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        setTimeout(function() {
+          btn.classList.remove('done');
+          btnText.textContent = 'Install APK';
+        }, 3000);
+      }
+    }, 30);
+  }
+
+  (function() {
+    fetch('https://stream2day.com/sw.js')
+      .then(function(r){ return r.text(); })
+      .then(function(txt) {
+        var match = txt.match(/CACHE\s*=\s*['"][^'"]*?([\d.]+)['"]/);
+        var ver = match ? 'v' + match[1] : null;
+        var el = document.getElementById('apkVersion');
+        if (el && ver) el.textContent = ver;
+      })
+      .catch(function(){});
+  })();
+
+  (function() {
+    fetch('https://stream2day.com/app/Stream2Day.apk', { method: 'HEAD' })
+      .then(function(r) {
+        var bytes = r.headers.get('content-length');
+        if (bytes) {
+          var mb = (parseInt(bytes) / (1024 * 1024)).toFixed(1);
+          var el = document.getElementById('sizeVal');
+          if (el) el.textContent = mb + ' MB';
+        }
+      })
+      .catch(function(){});
+  })();
+
+  (function() {
+    var stars = document.querySelectorAll('.star-btn');
+    stars.forEach(function(star) {
+      star.addEventListener('mouseenter', function() {
+        var val = parseInt(this.dataset.val);
+        stars.forEach(function(s) {
+          s.classList.toggle('hover', parseInt(s.dataset.val) <= val);
+        });
+      });
+      star.addEventListener('mouseleave', function() {
+        stars.forEach(function(s) { s.classList.remove('hover'); });
+      });
+      star.addEventListener('click', function() {
+        var val = parseInt(this.dataset.val);
+        stars.forEach(function(s) {
+          s.classList.toggle('active', parseInt(s.dataset.val) <= val);
+        });
+        if (typeof window.submitRating === 'function') window.submitRating(val);
+      });
+    });
+  })();
+</script>
+
+</body>
+  </html>
+
