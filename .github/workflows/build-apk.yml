@@ -1,5 +1,5 @@
 name: Build Android APK
- 
+
 on:
   workflow_dispatch:
   push:
@@ -28,36 +28,30 @@ jobs:
       - name: Install Bubblewrap CLI
         run: npm install -g @bubblewrap/cli
 
-      - name: Decode keystore
-        run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > stream2day.keystore
-
       - name: Init Bubblewrap project
         run: |
           bubblewrap init \
-            --manifest="https://stream2day.com/manifest.json" \
+            --manifest="https://stream2day.github.io/manifest.json" \
             --directory="./twa-project" \
             --skipPwaValidation \
-            --alias="stream2day" \
-            --alphaApp \
-            --skipNoGoogleLogin \
             --quiet || true
 
       - name: Configure signing key
         run: |
-          cp stream2day.keystore ./twa-project/android.keystore
+          mkdir -p ./twa-project
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > ./twa-project/android.keystore
 
       - name: Build APK
         working-directory: ./twa-project
         env:
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
           bubblewrap build \
             --signingKeyPath=./android.keystore \
             --signingKeyAlias="${{ secrets.KEY_ALIAS }}" \
             --signingKeyPassword="$KEY_PASSWORD" \
-            --signingKeyStorePassword="$KEYSTORE_PASSWORD"
+            --signingKeyStorePassword="$STORE_PASSWORD"
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
@@ -65,4 +59,3 @@ jobs:
           name: stream2day-apk
           path: ./twa-project/app-release-signed.apk
           retention-days: 14
-          
