@@ -5,6 +5,7 @@ on:
   push:
     branches: [main]
     paths:
+      - 'android/**'
       - 'manifest.json'
 
 jobs:
@@ -20,42 +21,25 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install Bubblewrap CLI
-        run: npm install -g @bubblewrap/cli
-
-      - name: Init Bubblewrap project
+      - name: Decode keystore
         run: |
-          bubblewrap init \
-            --manifest="https://stream2day.github.io/manifest.json" \
-            --directory="./twa-project" \
-            --skipPwaValidation \
-            --quiet || true
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/app/keystore.jks
 
-      - name: Configure signing key
-        run: |
-          mkdir -p ./twa-project
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > ./twa-project/android.keystore
+      - name: Make gradlew executable
+        run: chmod +x android/gradlew
 
-      - name: Build APK
-        working-directory: ./twa-project
+      - name: Build signed APK
+        working-directory: android
         env:
+          KEYSTORE_PATH: keystore.jks
           STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: |
-          bubblewrap build \
-            --signingKeyPath=./android.keystore \
-            --signingKeyAlias="${{ secrets.KEY_ALIAS }}" \
-            --signingKeyPassword="$KEY_PASSWORD" \
-            --signingKeyStorePassword="$STORE_PASSWORD"
+        run: ./gradlew assembleRelease
 
-      - name: Upload APK artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: stream2day-apk
-          path: ./twa-project/app-release-signed.apk
+          path: android/app/build/outputs/apk/release/app-release.apk
           retention-days: 14
