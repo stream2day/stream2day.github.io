@@ -1,1 +1,1 @@
-
+-keep class com.stream2day.app.** { *; }
