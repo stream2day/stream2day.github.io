@@ -5,6 +5,7 @@ on:
     branches: [ main ]
     paths:
       - 'android/**'
+      - 'icons/**'
       - '.github/workflows/build-apk.yml'
   workflow_dispatch:
     inputs:
@@ -31,18 +32,34 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
+      - name: Copy app icons
+        run: |
+          mkdir -p android/app/src/main/res/mipmap-mdpi
+          mkdir -p android/app/src/main/res/mipmap-hdpi
+          mkdir -p android/app/src/main/res/mipmap-xhdpi
+          mkdir -p android/app/src/main/res/mipmap-xxhdpi
+          mkdir -p android/app/src/main/res/mipmap-xxxhdpi
+          cp icons/icon-72x72.png   android/app/src/main/res/mipmap-mdpi/ic_launcher.png
+          cp icons/icon-72x72.png   android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png
+          cp icons/icon-96x96.png   android/app/src/main/res/mipmap-hdpi/ic_launcher.png
+          cp icons/icon-96x96.png   android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png
+          cp icons/icon-144x144.png android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
+          cp icons/icon-144x144.png android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png
+          cp icons/icon-144x144.png android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
+          cp icons/icon-144x144.png android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
+          cp icons/icon-192x192.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
+          cp icons/icon-192x192.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
+
       - name: Set version
         working-directory: android
         run: |
           VERSION_NAME="${{ github.event.inputs.version_name }}"
           if [ -z "$VERSION_NAME" ]; then
-            # Auto version from date: 1.YYYYMMDD
             VERSION_NAME="1.$(date +%Y%m%d)"
           fi
           VERSION_CODE=$(date +%s | cut -c1-9)
           echo "VERSION_NAME=$VERSION_NAME" >> $GITHUB_ENV
           echo "VERSION_CODE=$VERSION_CODE" >> $GITHUB_ENV
-          echo "Setting version: $VERSION_NAME ($VERSION_CODE)"
 
       - name: Update version in build.gradle
         working-directory: android
@@ -74,12 +91,10 @@ jobs:
       - name: Rename APK
         run: |
           mkdir -p output
-          # Debug APK (always available)
           if [ -f android/app/build/outputs/apk/debug/app-debug.apk ]; then
             cp android/app/build/outputs/apk/debug/app-debug.apk \
                output/Stream2Day-${{ env.VERSION_NAME }}-debug.apk
           fi
-          # Release APK (if signed)
           if [ -f android/app/build/outputs/apk/release/app-release.apk ]; then
             cp android/app/build/outputs/apk/release/app-release.apk \
                output/Stream2Day-${{ env.VERSION_NAME }}.apk
@@ -111,4 +126,3 @@ jobs:
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
