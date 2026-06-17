@@ -607,7 +607,7 @@ window.dataLayer = window.dataLayer || [];
       filteredStations.forEach(function(s, i) {
         var isActive = (String(s.id) === String(typeof currentActiveId !== 'undefined' ? currentActiveId : '') && (typeof isPlaying !== 'undefined' && isPlaying));
         var imgHtml = s.img
-          ? '<img src="' + s.img + '" alt="' + s.name + '" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;" onload="imgLoad(this)" onerror="imgErr(this)">'
+          ? '<img src="' + s.img + '" alt="' + s.name + '" style="width:100%;height:100%;object-fit:cover;display:block;" onload="imgLoad(this)" onerror="imgErr(this)">'
           : '<div class="tv-pill-placeholder">' + (s.name||'').substring(0,3).toUpperCase() + '</div>';
         rGrid.insertAdjacentHTML('beforeend',
           '<div class="tv-pill' + (isActive ? ' tv-active' : '') + '" id="card-' + s.id + '" style="width:100%;" onclick="handleCardPlay(\'' + s.id + '\')">'
@@ -2119,7 +2119,7 @@ if ('serviceWorker' in navigator) {
     var ytId = getYouTubeId(v.url || '');
     var thumb = v.img || (ytId ? getYouTubeThumb(ytId) : '');
     var thumbHtml = thumb
-      ? '<img src="' + thumb + '" alt="' + (v.title || '') + '" loading="lazy" onload="this.classList.add(\'loaded\')" onload="imgLoad(this)" onerror="imgErr(this)">'
+      ? '<img src="' + thumb + '" alt="' + (v.title || '') + '" onload="this.classList.add('loaded');imgLoad(this)" onerror="imgErr(this)">'
       : '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.6rem;background:var(--border2);">🎬</div>';
     var key = v._key || '';
     var isFav = watchFavs.includes(key);
@@ -2132,7 +2132,7 @@ if ('serviceWorker' in navigator) {
       + '</div>';
   }
   function buildWatchCatThumb(cat) {
-    if (cat.img) return '<img src="' + cat.img + '" loading="lazy" onload="imgLoad(this)" onerror="imgErr(this)">';
+    if (cat.img) return '<img src="' + cat.img + '" onload="imgLoad(this)" onerror="imgErr(this)">';
     var catVids = _watchVideos.filter(function(v) { return v.category === cat._key && v.img; }).slice(0, 4);
     if (catVids.length >= 4) {
       return '<div style="display:flex;flex-direction:column;width:100%;height:100%;">'
@@ -2437,7 +2437,7 @@ if ('serviceWorker' in navigator) {
   function _buildBrowseCatThumb(cat) {
     /* 1. Category-র নিজের img আছে? */
     if (cat.img) {
-      return '<img src="' + cat.img + '" alt="" class="browse-cat-card-img" loading="lazy"'
+      return '<img src="' + cat.img + '" alt="" class="browse-cat-card-img"'
         + ' onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
         + '<div class="browse-cat-card-fallback" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28"><rect x="2" y="2" width="20" height="20" rx="3"/><polygon points="10 8 16 12 10 16 10 8"/></svg></div>';
     }
@@ -2453,29 +2453,29 @@ if ('serviceWorker' in navigator) {
     if (imgs.length >= 4) {
       return '<div style="display:flex;flex-direction:column;width:100%;height:100%;">'
         + '<div style="display:flex;flex:1;gap:1px;">'
-          + '<div style="flex:1;overflow:hidden;"><img src="' + imgs[0] + '" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy"></div>'
-          + '<div style="flex:1;overflow:hidden;"><img src="' + imgs[1] + '" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy"></div>'
+          + '<div style="flex:1;overflow:hidden;"><img src="' + imgs[0] + '" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
+          + '<div style="flex:1;overflow:hidden;"><img src="' + imgs[1] + '" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
         + '</div>'
         + '<div style="display:flex;flex:1;gap:1px;margin-top:1px;">'
-          + '<div style="flex:1;overflow:hidden;"><img src="' + imgs[2] + '" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy"></div>'
-          + '<div style="flex:1;overflow:hidden;"><img src="' + imgs[3] + '" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy"></div>'
+          + '<div style="flex:1;overflow:hidden;"><img src="' + imgs[2] + '" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
+          + '<div style="flex:1;overflow:hidden;"><img src="' + imgs[3] + '" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
         + '</div>'
       + '</div>';
     } else if (imgs.length === 3) {
       return '<div style="display:flex;flex-direction:column;width:100%;height:100%;">'
         + '<div style="display:flex;flex:1;gap:1px;">'
-          + '<div style="flex:1;overflow:hidden;"><img src="' + imgs[0] + '" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy"></div>'
-          + '<div style="flex:1;overflow:hidden;"><img src="' + imgs[1] + '" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy"></div>'
+          + '<div style="flex:1;overflow:hidden;"><img src="' + imgs[0] + '" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
+          + '<div style="flex:1;overflow:hidden;"><img src="' + imgs[1] + '" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
         + '</div>'
-        + '<div style="flex:1;overflow:hidden;margin-top:1px;"><img src="' + imgs[2] + '" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy"></div>'
+        + '<div style="flex:1;overflow:hidden;margin-top:1px;"><img src="' + imgs[2] + '" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
       + '</div>';
     } else if (imgs.length === 2) {
       return '<div style="display:flex;width:100%;height:100%;gap:1px;">'
-        + '<div style="flex:1;overflow:hidden;"><img src="' + imgs[0] + '" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy"></div>'
-        + '<div style="flex:1;overflow:hidden;"><img src="' + imgs[1] + '" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy"></div>'
+        + '<div style="flex:1;overflow:hidden;"><img src="' + imgs[0] + '" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
+        + '<div style="flex:1;overflow:hidden;"><img src="' + imgs[1] + '" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
       + '</div>';
     } else if (imgs.length === 1) {
-      return '<img src="' + imgs[0] + '" alt="" class="browse-cat-card-img" loading="lazy">';
+      return '<img src="' + imgs[0] + '" alt="" class="browse-cat-card-img">';
     }
     /* 4. কোনো image নেই — fallback icon */
     return '<div class="browse-cat-card-fallback"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28"><rect x="2" y="2" width="20" height="20" rx="3"/><polygon points="10 8 16 12 10 16 10 8"/></svg></div>';
@@ -2725,13 +2725,13 @@ if ('serviceWorker' in navigator) {
       // 2x2 grid — 4 ছবি
       collageHtml = collageThumbs.slice(0,4).map(function(src) {
         return '<div style="width:50%;height:50%;overflow:hidden;flex-shrink:0;">'
-          + '<img src="' + src + '" loading="lazy" onload="this.style.opacity=1" onerror="this.style.opacity=0.2" style="width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity 0.3s;">'
+          + '<img src="' + src + '" onload="this.style.opacity=1" onerror="this.style.opacity=0.2" style="width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity 0.3s;">'
           + '</div>';
       }).join('');
       collageHtml = '<div style="position:absolute;inset:0;display:flex;flex-wrap:wrap;overflow:hidden;">' + collageHtml + '</div>';
     } else if (collageThumbs.length === 1) {
       collageHtml = '<div style="position:absolute;inset:0;overflow:hidden;">'
-        + '<img src="' + collageThumbs[0] + '" loading="lazy" onload="this.style.opacity=1" onerror="this.style.opacity=0.2" style="width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity 0.3s;">'
+        + '<img src="' + collageThumbs[0] + '" onload="this.style.opacity=1" onerror="this.style.opacity=0.2" style="width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity 0.3s;">'
         + '</div>';
     }
     var moreCard = '<div class="watch-video-card rankings-more-card" style="animation-delay:' + (videos.length * 0.06) + 's" onclick="' + moreOnClick + '">'
@@ -2992,7 +2992,7 @@ if ('serviceWorker' in navigator) {
       var safeName = artist.name.replace(/'/g, "\\'");
       return '<div class="artist-card" ontouchstart="this.classList.add(\'tapped\')" ontouchend="this.classList.remove(\'tapped\')" ontouchcancel="this.classList.remove(\'tapped\')" onclick="openWatchArtistVidModal(\'' + safeName + '\')">'
         + '<div class="artist-card-circle">'
-        + '<img src="' + artist.url + '" alt="' + artist.name + '" loading="lazy" onload="imgLoad(this)" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
+        + '<img src="' + artist.url + '" alt="' + artist.name + '" onload="imgLoad(this)" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
         + '<div class="artist-card-circle-fallback" style="display:none;">🎬</div>'
         + '</div>'
         + '<div class="artist-card-name">' + artist.name + '</div>'
@@ -3084,7 +3084,7 @@ if ('serviceWorker' in navigator) {
     }
     var mediaHtml;
     if (thumb) {
-      mediaHtml = '<img class="wr-card-thumb" src="' + thumb + '" alt="' + (r.title || '') + '" loading="lazy" onerror="this.style.display=\'none\'">';
+      mediaHtml = '<img class="wr-card-thumb" src="' + thumb + '" alt="' + (r.title || '') + '" onerror="this.style.display=\'none\'">';
     } else if (videoUrl) {
       mediaHtml = '<video class="wr-card-thumb" src="' + videoUrl + '" muted playsinline preload="metadata" loop '
         + 'style="object-fit:cover;pointer-events:none;" '
@@ -3207,7 +3207,7 @@ if ('serviceWorker' in navigator) {
       var safeName = artist.name.replace(/'/g, "\\'");
       return '<div class="all-artist-card" ontouchstart="this.classList.add(\'tapped\')" ontouchend="this.classList.remove(\'tapped\')" ontouchcancel="this.classList.remove(\'tapped\')" onclick="closeAllWatchArtistsModal();setTimeout(function(){openWatchArtistVidModal(\'' + safeName + '\')},220)">'
         + '<div class="all-artist-circle">'
-        + '<img src="' + artist.url + '" alt="' + artist.name + '" loading="lazy" onload="imgLoad(this)" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
+        + '<img src="' + artist.url + '" alt="' + artist.name + '" onload="imgLoad(this)" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
         + '<div class="artist-card-circle-fallback" style="display:none;">🎬</div>'
         + '</div>'
         + '<div class="all-artist-name">' + artist.name + '</div>'
@@ -3329,25 +3329,25 @@ if ('serviceWorker' in navigator) {
       var eps = (_podcastEps || []).filter(function(e){ return e.category === cat._key && e.img; });
       var thumbInner;
       if (cat.img) {
-        thumbInner = '<img src="' + cat.img + '" alt="" class="browse-cat-card-img" loading="lazy" onload="imgLoad(this)" onerror="imgErr(this)">';
+        thumbInner = '<img src="' + cat.img + '" alt="" class="browse-cat-card-img" onload="imgLoad(this)" onerror="imgErr(this)">';
       } else if (eps.length >= 4) {
         thumbInner = '<div style="display:flex;flex-direction:column;width:100%;height:100%;">'
           + '<div style="display:flex;flex:1;gap:1px;">'
-            + '<div style="flex:1;overflow:hidden;"><img src="' + eps[0].img + '" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy" onload="imgLoad(this)" onerror="imgErr(this)"></div>'
-            + '<div style="flex:1;overflow:hidden;"><img src="' + eps[1].img + '" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy" onload="imgLoad(this)" onerror="imgErr(this)"></div>'
+            + '<div style="flex:1;overflow:hidden;"><img src="' + eps[0].img + '" style="width:100%;height:100%;object-fit:cover;display:block;" onload="imgLoad(this)" onerror="imgErr(this)"></div>'
+            + '<div style="flex:1;overflow:hidden;"><img src="' + eps[1].img + '" style="width:100%;height:100%;object-fit:cover;display:block;" onload="imgLoad(this)" onerror="imgErr(this)"></div>'
           + '</div>'
           + '<div style="display:flex;flex:1;gap:1px;margin-top:1px;">'
-            + '<div style="flex:1;overflow:hidden;"><img src="' + eps[2].img + '" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy" onload="imgLoad(this)" onerror="imgErr(this)"></div>'
-            + '<div style="flex:1;overflow:hidden;"><img src="' + eps[3].img + '" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy" onload="imgLoad(this)" onerror="imgErr(this)"></div>'
+            + '<div style="flex:1;overflow:hidden;"><img src="' + eps[2].img + '" style="width:100%;height:100%;object-fit:cover;display:block;" onload="imgLoad(this)" onerror="imgErr(this)"></div>'
+            + '<div style="flex:1;overflow:hidden;"><img src="' + eps[3].img + '" style="width:100%;height:100%;object-fit:cover;display:block;" onload="imgLoad(this)" onerror="imgErr(this)"></div>'
           + '</div>'
         + '</div>';
       } else if (eps.length === 2 || eps.length === 3) {
         thumbInner = '<div style="display:flex;width:100%;height:100%;gap:1px;">'
-          + '<div style="flex:1;overflow:hidden;"><img src="' + eps[0].img + '" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy" onload="imgLoad(this)" onerror="imgErr(this)"></div>'
-          + '<div style="flex:1;overflow:hidden;"><img src="' + eps[1].img + '" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy" onload="imgLoad(this)" onerror="imgErr(this)"></div>'
+          + '<div style="flex:1;overflow:hidden;"><img src="' + eps[0].img + '" style="width:100%;height:100%;object-fit:cover;display:block;" onload="imgLoad(this)" onerror="imgErr(this)"></div>'
+          + '<div style="flex:1;overflow:hidden;"><img src="' + eps[1].img + '" style="width:100%;height:100%;object-fit:cover;display:block;" onload="imgLoad(this)" onerror="imgErr(this)"></div>'
         + '</div>';
       } else if (eps.length === 1) {
-        thumbInner = '<img src="' + eps[0].img + '" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy" onload="imgLoad(this)" onerror="imgErr(this)">';
+        thumbInner = '<img src="' + eps[0].img + '" style="width:100%;height:100%;object-fit:cover;display:block;" onload="imgLoad(this)" onerror="imgErr(this)">';
       } else {
         thumbInner = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:1.6rem;background:var(--border2);">🎙️</div>';
       }
@@ -3394,7 +3394,7 @@ if ('serviceWorker' in navigator) {
     section.style.display = '';
     list.innerHTML = artists.map(function(artist) {
       var safeName = artist.name.replace(/'/g, "\\'");
-      return '<div class="artist-card" ontouchstart="this.classList.add(\'tapped\')" ontouchend="this.classList.remove(\'tapped\')" ontouchcancel="this.classList.remove(\'tapped\')" onclick="openArtistEpModal(\'' + safeName + '\')">'        + '<div class="artist-card-circle">'        + '<img src="' + artist.url + '" alt="' + artist.name + '" loading="lazy" onload="imgLoad(this)" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'        + '<div class="artist-card-circle-fallback" style="display:none;">&#127925;</div>'        + '</div>'        + '<div class="artist-card-name">' + artist.name + '</div>'        + '</div>';
+      return '<div class="artist-card" ontouchstart="this.classList.add(\'tapped\')" ontouchend="this.classList.remove(\'tapped\')" ontouchcancel="this.classList.remove(\'tapped\')" onclick="openArtistEpModal(\'' + safeName + '\')">'        + '<div class="artist-card-circle">'        + '<img src="' + artist.url + '" alt="' + artist.name + '" onload="imgLoad(this)" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'        + '<div class="artist-card-circle-fallback" style="display:none;">&#127925;</div>'        + '</div>'        + '<div class="artist-card-name">' + artist.name + '</div>'        + '</div>';
     }).join('');
   }
   window.renderListenBrowseArtists = renderListenBrowseArtists;
@@ -3506,7 +3506,7 @@ if ('serviceWorker' in navigator) {
       var safeName = artist.name.replace(/'/g, "\\'");
       return '<div class="all-artist-card" ontouchstart="this.classList.add(\'tapped\')" ontouchend="this.classList.remove(\'tapped\')" ontouchcancel="this.classList.remove(\'tapped\')" onclick="closeAllArtistsModal();setTimeout(function(){openArtistEpModal(\'' + safeName + '\')},220)">'
         + '<div class="all-artist-circle">'
-        + '<img src="' + artist.url + '" alt="' + artist.name + '" loading="lazy" onload="imgLoad(this)" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
+        + '<img src="' + artist.url + '" alt="' + artist.name + '" onload="imgLoad(this)" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
         + '<div class="artist-card-circle-fallback" style="display:none;">🎵</div>'
         + '</div>'
         + '<div class="all-artist-name">' + artist.name + '</div>'
@@ -3587,36 +3587,36 @@ if ('serviceWorker' in navigator) {
   window.listenBrowseAllTagSelect = listenBrowseAllTagSelect;
   function _buildListenCatThumb(cat) {
     if (cat.img) {
-      return '<img src="' + cat.img + '" alt="" class="browse-cat-card-img" loading="lazy" onload="imgLoad(this)" onerror="this.style.display=\'none\';this.nextElementSibling&&(this.nextElementSibling.style.display=\'flex\')">'
+      return '<img src="' + cat.img + '" alt="" class="browse-cat-card-img" onload="imgLoad(this)" onerror="this.style.display=\'none\';this.nextElementSibling&&(this.nextElementSibling.style.display=\'flex\')">'
         + '<div class="browse-cat-card-fallback" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg></div>';
     }
     var imgs = (_podcastEps || []).filter(function(e){ return e.category === cat._key && e.img; }).slice(0, 4).map(function(e){ return e.img; });
     if (imgs.length >= 4) {
       return '<div style="display:flex;flex-direction:column;width:100%;height:100%;">'
         + '<div style="display:flex;flex:1;gap:1px;">'
-          + '<div style="flex:1;overflow:hidden;"><img src="' + imgs[0] + '" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy"></div>'
-          + '<div style="flex:1;overflow:hidden;"><img src="' + imgs[1] + '" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy"></div>'
+          + '<div style="flex:1;overflow:hidden;"><img src="' + imgs[0] + '" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
+          + '<div style="flex:1;overflow:hidden;"><img src="' + imgs[1] + '" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
         + '</div>'
         + '<div style="display:flex;flex:1;gap:1px;margin-top:1px;">'
-          + '<div style="flex:1;overflow:hidden;"><img src="' + imgs[2] + '" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy"></div>'
-          + '<div style="flex:1;overflow:hidden;"><img src="' + imgs[3] + '" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy"></div>'
+          + '<div style="flex:1;overflow:hidden;"><img src="' + imgs[2] + '" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
+          + '<div style="flex:1;overflow:hidden;"><img src="' + imgs[3] + '" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
         + '</div>'
       + '</div>';
     } else if (imgs.length === 3) {
       return '<div style="display:flex;flex-direction:column;width:100%;height:100%;">'
         + '<div style="display:flex;flex:1;gap:1px;">'
-          + '<div style="flex:1;overflow:hidden;"><img src="' + imgs[0] + '" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy"></div>'
-          + '<div style="flex:1;overflow:hidden;"><img src="' + imgs[1] + '" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy"></div>'
+          + '<div style="flex:1;overflow:hidden;"><img src="' + imgs[0] + '" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
+          + '<div style="flex:1;overflow:hidden;"><img src="' + imgs[1] + '" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
         + '</div>'
-        + '<div style="flex:1;overflow:hidden;margin-top:1px;"><img src="' + imgs[2] + '" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy"></div>'
+        + '<div style="flex:1;overflow:hidden;margin-top:1px;"><img src="' + imgs[2] + '" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
       + '</div>';
     } else if (imgs.length === 2) {
       return '<div style="display:flex;width:100%;height:100%;gap:1px;">'
-        + '<div style="flex:1;overflow:hidden;"><img src="' + imgs[0] + '" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy"></div>'
-        + '<div style="flex:1;overflow:hidden;"><img src="' + imgs[1] + '" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy"></div>'
+        + '<div style="flex:1;overflow:hidden;"><img src="' + imgs[0] + '" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
+        + '<div style="flex:1;overflow:hidden;"><img src="' + imgs[1] + '" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
       + '</div>';
     } else if (imgs.length === 1) {
-      return '<img src="' + imgs[0] + '" alt="" class="browse-cat-card-img" loading="lazy">';
+      return '<img src="' + imgs[0] + '" alt="" class="browse-cat-card-img">';
     }
     return '<div class="browse-cat-card-fallback"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg></div>';
   }
@@ -3696,7 +3696,7 @@ if ('serviceWorker' in navigator) {
       var title = cat.title || key;
       return '<div class="popular-series-item" onclick="openWatchCatModal(\'' + key + '\')" ontouchstart="this.classList.add(\'tapped\')" ontouchend="this.classList.remove(\'tapped\')" ontouchcancel="this.classList.remove(\'tapped\')">'
         + '<div class="popular-series-card">'
-        + '<img src="' + cat.img + '" alt="' + title + '" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
+        + '<img src="' + cat.img + '" alt="' + title + '" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
         + '<div class="popular-series-card-fallback" style="display:none;">' + title + '</div>'
         + '</div>'
         + '</div>';
@@ -4451,7 +4451,7 @@ if ('serviceWorker' in navigator) {
       }
       var mediaHtml;
       if (thumb) {
-        mediaHtml = '<img class="reel-card-thumb" src="' + thumb + '" alt="' + (r.title || '') + '" loading="lazy" onerror="this.style.display=\'none\'">';
+        mediaHtml = '<img class="reel-card-thumb" src="' + thumb + '" alt="' + (r.title || '') + '" onerror="this.style.display=\'none\'">';
       } else if (r.url) {
         // img নেই, YouTube না — muted autoplay video দিয়ে thumbnail দেখাও
         mediaHtml = '<video class="reel-card-thumb" src="' + r.url + '" muted playsinline preload="metadata" loop style="object-fit:cover;pointer-events:none;"></video>';
@@ -5882,7 +5882,7 @@ if ('serviceWorker' in navigator) {
     var img  = ch.img  || '';
     var isActive = (_activeTvKey === key);
     var thumbHtml = img
-      ? '<img src="' + img + '" alt="' + name + '" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;" onload="imgLoad(this)" onerror="imgErr(this)">'
+      ? '<img src="' + img + '" alt="' + name + '" style="width:100%;height:100%;object-fit:cover;display:block;" onload="imgLoad(this)" onerror="imgErr(this)">'
       : '<div class="tv-pill-placeholder">' + name.substring(0, 3).toUpperCase() + '</div>';
     return '<div class="tv-pill' + (isActive ? ' tv-active' : '') + '"'
       + ' style="animation-delay:' + (i * 0.07) + 's"'
@@ -8095,7 +8095,7 @@ if ('serviceWorker' in navigator) {
     function buildHtml(s, i) {
       var isActive = (String(s.id) === String(currentActiveId) && isPlaying);
       var thumbHtml = s.img
-        ? '<img src="' + s.img + '" alt="' + (s.name||'') + '" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;" onload="imgLoad(this)" onerror="imgErr(this)">'
+        ? '<img src="' + s.img + '" alt="' + (s.name||'') + '" style="width:100%;height:100%;object-fit:cover;display:block;" onload="imgLoad(this)" onerror="imgErr(this)">'
         : '<div class="tv-pill-placeholder">' + (s.name||'').substring(0,3).toUpperCase() + '</div>';
       return '<div class="tv-pill' + (isActive ? ' tv-active' : '') + '" id="asc-' + s.id + '" style="animation-delay:' + (i*0.04) + 's;width:100%;flex-shrink:1;" onclick="handleCardPlay(\'' + s.id + '\')">'
         + '<div class="tv-pill-thumb">'
@@ -8786,7 +8786,7 @@ var _historyVideo   = JSON.parse(localStorage.getItem('castfm_hist_video') || '[
     if (n === 0) return '<div class="sb-cat-thumb"><span style="font-size:1.1rem">📁</span></div>';
     var cls = n === 1 ? 'cols-1' : n === 2 ? 'cols-2' : n === 3 ? 'cols-3' : '';
     var cells = imgs.slice(0, n).map(function(src) {
-      return '<img src="' + src + '" loading="lazy" onload="imgLoad(this)" onerror="imgErr(this)">';
+      return '<img src="' + src + '" onload="imgLoad(this)" onerror="imgErr(this)">';
     }).join('');
     return '<div class="sb-collage ' + cls + '">' + cells + '</div>';
   }
@@ -8813,7 +8813,7 @@ var _historyVideo   = JSON.parse(localStorage.getItem('castfm_hist_video') || '[
         var sub = catVids.length + ' Video' + (catVids.length !== 1 ? 's' : '');
         var thumbHtml;
         if (cat.img) {
-          thumbHtml = '<div class="sb-cat-thumb"><img src="' + cat.img + '" loading="lazy" onload="imgLoad(this)" onerror="imgErr(this)"></div>';
+          thumbHtml = '<div class="sb-cat-thumb"><img src="' + cat.img + '" onload="imgLoad(this)" onerror="imgErr(this)"></div>';
         } else {
           var imgs = catVids.slice(-4).map(function(v){ return v.thumb || v.img || ''; }).filter(Boolean);
           thumbHtml = imgs.length ? buildCollageThumb(imgs) : '<div class="sb-cat-thumb"><span>📺</span></div>';
@@ -8839,7 +8839,7 @@ var _historyVideo   = JSON.parse(localStorage.getItem('castfm_hist_video') || '[
         var sub = catEps.length + ' Episode' + (catEps.length !== 1 ? 's' : '');
         var thumbHtml;
         if (cat.img) {
-          thumbHtml = '<div class="sb-cat-thumb"><img src="' + cat.img + '" loading="lazy" onload="imgLoad(this)" onerror="imgErr(this)"></div>';
+          thumbHtml = '<div class="sb-cat-thumb"><img src="' + cat.img + '" onload="imgLoad(this)" onerror="imgErr(this)"></div>';
         } else {
           var imgs = catEps.slice(-4).map(function(e){ return e.img || ''; }).filter(Boolean);
           thumbHtml = imgs.length ? buildCollageThumb(imgs) : '<div class="sb-cat-thumb"><span>🎙️</span></div>';
@@ -9019,7 +9019,7 @@ var _historyVideo   = JSON.parse(localStorage.getItem('castfm_hist_video') || '[
           '<div class="explore-news-title">' + escHtml(title) + '</div>' +
           (pubDate ? '<div class="explore-news-meta"><img class="explore-news-source-icon" src="' + FALLBACK + '" alt="">প্রথম আলো · ' + formatNewsDate(pubDate) + '</div>' : '') +
         '</div>' +
-        '<img class="explore-news-thumb" src="' + thumbSrc + '" alt="" loading="lazy" ' + onerrorAttr + '>' +
+        '<img class="explore-news-thumb" src="' + thumbSrc + '" alt="" ' + onerrorAttr + '>' +
       '</a>';
     }).join('');
   }
@@ -9107,7 +9107,7 @@ var _historyVideo   = JSON.parse(localStorage.getItem('castfm_hist_video') || '[
           '<div class="explore-news-title">' + escHtml(title) + '</div>' +
           (pubDate ? '<div class="explore-news-meta"><img class="explore-news-source-icon" src="' + FALLBACK + '" alt="">প্রথম আলো · ' + formatNewsDate(pubDate) + '</div>' : '') +
         '</div>' +
-        '<img class="explore-news-thumb" src="' + thumbSrc + '" alt="" loading="lazy" ' + onerrorAttr + '>' +
+        '<img class="explore-news-thumb" src="' + thumbSrc + '" alt="" ' + onerrorAttr + '>' +
       '</a>';
     }).join('');
 
@@ -9170,7 +9170,7 @@ var _historyVideo   = JSON.parse(localStorage.getItem('castfm_hist_video') || '[
           '<div class="explore-news-title">' + escHtml(title) + '</div>' +
           (pubDate ? '<div class="explore-news-meta"><img class="explore-news-source-icon" src="' + FALLBACK + '" alt="">প্রথম আলো · ' + formatNewsDate(pubDate) + '</div>' : '') +
         '</div>' +
-        '<img class="explore-news-thumb" src="' + thumbSrc + '" alt="" loading="lazy" ' + onerrorAttr + '>' +
+        '<img class="explore-news-thumb" src="' + thumbSrc + '" alt="" ' + onerrorAttr + '>' +
       '</a>';
     }).join('');
   };
