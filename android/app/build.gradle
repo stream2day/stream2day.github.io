@@ -36,4 +36,6 @@ android {
     }
 }
 
-dependencies {}
+dependencies {
+    implementation 'androidx.browser:browser:1.7.0'
+}
