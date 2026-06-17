@@ -2119,7 +2119,7 @@ if ('serviceWorker' in navigator) {
     var ytId = getYouTubeId(v.url || '');
     var thumb = v.img || (ytId ? getYouTubeThumb(ytId) : '');
     var thumbHtml = thumb
-      ? '<img src="' + thumb + '" alt="' + (v.title || '') + '" loading="lazy" onload="this.classList.add(\'loaded\')" onload="imgLoad(this)" onerror="imgErr(this)">'
+      ? '<img src="' + thumb + '" alt="' + (v.title || '') + '" loading="lazy" onload="this.classList.add('loaded');imgLoad(this)" onerror="imgErr(this)">'
       : '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.6rem;background:var(--border2);">🎬</div>';
     var key = v._key || '';
     var isFav = watchFavs.includes(key);
