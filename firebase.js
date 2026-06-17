@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged }
       from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     import { getDatabase, ref, set, get, update, onValue, increment, onDisconnect, push, query, limitToLast, orderByKey, endBefore }
       from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -27,7 +27,13 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
     window._fbOnValue  = onValue;
     window._fbIncrement = increment;
     window._fbProvider = provider;
-    window._fbSignIn   = () => signInWithPopup(auth, provider);
+    window._fbSignIn   = () => {
+      const isWebView = /wv|WebView/.test(navigator.userAgent);
+      if (isWebView) {
+        return signInWithRedirect(auth, provider);
+      }
+      return signInWithPopup(auth, provider);
+    };
     window._fbSignOut  = () => signOut(auth);
     window._fbOnAuth   = (cb) => onAuthStateChanged(auth, cb);
     window._fbOnDisconnect = onDisconnect;
@@ -36,6 +42,12 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
     window._fbLimitToLast  = limitToLast;
     window._fbOrderByKey   = orderByKey;
     window._fbEndBefore    = endBefore;
+    // Handle redirect result (Android WebView এ Google login ফিরে আসলে)
+    getRedirectResult(auth).then((result) => {
+      if (result?.user && window.onFirebaseUser) {
+        window.onFirebaseUser(result.user);
+      }
+    }).catch(() => {});
     // Listen auth state
     onAuthStateChanged(auth, (user) => {
       if (window.onFirebaseUser) window.onFirebaseUser(user);
@@ -53,7 +65,6 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
         if (loader) {
           loader.classList.add('hide');
           setTimeout(function(){ loader.style.display = 'none'; }, 420);
-
         }
       }
     };
@@ -65,7 +76,6 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
         if (loader) {
           loader.classList.add('hide');
           setTimeout(function(){ loader.style.display = 'none'; }, 420);
-
         }
       }
     }, 8000);
