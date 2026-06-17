@@ -11,6 +11,7 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import androidx.browser.customtabs.CustomTabsIntent;
 
 public class MainActivity extends Activity {
 
@@ -45,8 +46,11 @@ public class MainActivity extends Activity {
                 if (url.startsWith("https://stream2day.com") || url.startsWith("http://stream2day.com")) {
                     return false;
                 }
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                startActivity(intent);
+                // Custom Tab দিয়ে app এর ভেতরে খুলবে
+                CustomTabsIntent customTabsIntent = new CustomTabsIntent.Builder()
+                        .setShowTitle(true)
+                        .build();
+                customTabsIntent.launchUrl(MainActivity.this, Uri.parse(url));
                 return true;
             }
         });
