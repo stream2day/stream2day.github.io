@@ -1,1 +1,8 @@
-
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.stream2day.twa",
+        "sha256_cert_fingerprints": ["E5:AC:51:5E:CC:56:F8:CC:48:68:78:F8:36:49:7B:41:8D:E8:CD:80:AF:41:FB:57:18:E2:4E:61:EE:FD:09:36"]
+      }
+    }]
